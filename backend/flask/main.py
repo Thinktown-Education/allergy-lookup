@@ -12,7 +12,7 @@ db = mysql.connector.connect(
   database="allergy"
 )
 
-user = None
+user = {}
 
 @cross_origin()
 @main.route("/heartbeat")
