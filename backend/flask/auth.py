@@ -57,7 +57,8 @@ def register():
             "code": 1,
             "error": "Missing information"
         }
-    
+
+    # Validates if user already exists, before encoding the password.
     cursor = db.cursor()
     sql = "SELECT * FROM user where email = %s"
     val = [data['email']]
