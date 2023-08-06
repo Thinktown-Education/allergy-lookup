@@ -16,7 +16,8 @@ import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import { logo } from 'src/assets/brand/logo'
+
+import thinktown from 'src/assets/images/thinktown.png'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -31,20 +32,12 @@ const AppHeader = () => {
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
-        <CHeaderBrand className="mx-auto d-md-none" to="/">
-          <CIcon icon={logo} height={48} alt="Logo" />
+        <CHeaderBrand className="mx-auto d-md-none d-inline-flex justify-content-center" to="/">
+          by Fang
         </CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <CNavLink to="/dashboard" component={NavLink}>
-              Dashboard
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
+            Fang's allergy lookup website
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav>

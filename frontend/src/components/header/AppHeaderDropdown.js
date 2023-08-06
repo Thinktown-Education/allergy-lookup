@@ -7,14 +7,16 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
-import { cilAccountLogout, cilUser } from '@coreui/icons'
+import { cilAccountLogout, cilUser, cilLockUnlocked } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from 'src/assets/images/avatars/8.jpg'
 import api from 'src/api/api'
+import common from 'src/utils/common'
 
 const AppHeaderDropdown = () => {
   const displayEmail = sessionStorage.getItem('email')
+  const roleName = common.getRoleName()
 
   const logout = async (e) => {
     e.preventDefault()
@@ -32,6 +34,10 @@ const AppHeaderDropdown = () => {
         <CDropdownItem href="#">
           <CIcon icon={cilUser} className="me-2" />
           {displayEmail}
+        </CDropdownItem>
+        <CDropdownItem href="#" disabled>
+          <CIcon icon={cilLockUnlocked} className="me-2" />
+          {roleName}
         </CDropdownItem>
         <CDropdownDivider />
         <CDropdownItem href="#" onClick={logout}>

@@ -32,6 +32,8 @@ def login():
     val = [data['email'], encodedPassword]
     cursor.execute(sql, val)
     result = cursor.fetchone()
+    db.commit()
+    cursor.close()
     if not result:
         return {
             "code": 1,
@@ -63,6 +65,8 @@ def register():
     val = [data['email']]
     cursor.execute(sql, val)
     result = cursor.fetchone()
+    db.commit()
+    cursor.close()
     if result:
         return {
             "code": 1,
@@ -71,7 +75,7 @@ def register():
     
     # MD5加密
     encodedPassword = hashlib.md5(data["password"].encode()).hexdigest()
-    sql = "INSERT INTO user(email, password) values (%s, %s)"
+    sql = "INSERT INTO user(email, password, role) values (%s, %s, 0)"
     val = (data["email"], encodedPassword)
     cursor.execute(sql, val)
     db.commit()

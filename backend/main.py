@@ -1,7 +1,8 @@
 # main.py
-from flask import Blueprint, session
+from flask import Blueprint, session, request
 from flask_cors import CORS, cross_origin
 import mysql.connector
+from enum import Enum
 
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
@@ -11,13 +12,11 @@ db = mysql.connector.connect(
   password="admin",
   database="allergy"
 )
-
 user = None
 
 @cross_origin()
 @main.route("/heartbeat")
 def heartbeat():
-    print(user)
     return {
         "code": 0,
         "error": "Live",
@@ -28,45 +27,153 @@ def heartbeat():
     }
 
 @cross_origin()
-@main.route('/getFood')
-def dbtest():
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM food")
+@main.route('/findFood/<name>')
+def findFood(name):
+    cursor = db.cursor(dictionary = True)
+    blurName = '%' + name + '%' # SQL中使用%符号进行模糊查询
+    cursor.execute("""
+                   SELECT * FROM food 
+                   WHERE food_name_lower LIKE LOWER(%s) or brand_lower LIKE LOWER(%s)""", [blurName, blurName])
     result = cursor.fetchall()
-    return result
+    for food in result:
+        cursor.execute("""SELECT
+                * 
+            FROM
+                ingredient
+                LEFT JOIN food_ingredient ON ingredient.id = food_ingredient.id_ing
+            WHERE
+            id_food = %s""", [food["id"]])
+        food["ingredients"] = cursor.fetchall()
 
-@cross_origin()
-@main.route('/getUser')
-def dbadd():
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM user")
-    result = cursor.fetchall()
+    db.commit()
+    cursor.close()
     return {
+        "code": 0,
+        "error": "",
         "data": result
     }
 
 @cross_origin()
+@main.route('/findIngredients/<name>')
+def findIngredients(name):
+    cursor = db.cursor(dictionary = True)
+    blurName = '%' + name + '%'
+    cursor.execute("""
+                   SELECT * FROM ingredient
+                   WHERE ing_name_lower LIKE LOWER(%s)""", [blurName])
+    result = cursor.fetchall()
+    db.commit()
+    cursor.close()
+    return {
+        "code": 0,
+        "error": "",
+        "data": result
+    }
+
+@cross_origin()
+@main.route('/findFoodByIngredients', methods = ['POST'])
+def findFoodByIngredients():
+    data = request.get_json(silent=True)
+    if data == None:
+        data = request.form
+
+    if "ingredients" not in data:
+        return {
+            "code": 1,
+            "error": "Incorrect data format"
+        }
+    
+    ingredientsId = data["ingredients"]
+    if not isinstance(ingredientsId, list):
+        return {
+            "code": 1,
+            "error": "Incorrect data format"
+        }
+    
+    if len(ingredientsId) == 0:
+        return {
+            "code": 0,
+            "error": "",
+            "data": []
+        }
+    
+    # 使用set类型对id进行去重
+    idSet = set() 
+    for iId in ingredientsId:
+        idSet.add(iId)
+    
+    idCount = len(idSet)
+    idFormat = str(idSet)[1:-1] # 去除首尾花括号
+
+    queryTemplate = f"""
+    SELECT
+        id,
+        food_name,
+        brand,
+        count(1) AS count 
+    FROM
+        food
+        LEFT JOIN food_ingredient ON food.id = food_ingredient.id_food 
+    WHERE
+        id_ing IN ( {idFormat} ) 
+    GROUP BY
+        id_food 
+    HAVING
+        count = {idCount}
+    """
+
+    cursor = db.cursor(dictionary=True)
+    cursor.execute(queryTemplate)
+    queryResult = cursor.fetchall()
+    for food in queryResult:
+        query = f"""
+        SELECT
+            * 
+        FROM
+            ingredient
+            LEFT JOIN food_ingredient ON ingredient.id = food_ingredient.id_ing
+        WHERE
+            id_food = {food['id']}
+        """
+        cursor.execute(query)
+        food['ingredients'] = cursor.fetchall()
+
+    db.commit()
+    cursor.close()
+    return {
+        "code": 0,
+        "error": "",
+        "data": queryResult
+    }
+
+"""
+所有需要登陆状态的请求都必须经过session检查
+"""
+@cross_origin()
 @main.before_request
 def check_session():
+    if request.method == "OPTIONS":
+        return {}
+    
     if "user" not in session:
         return {
             "error": "not signed in"
         }, 401
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary = True)
     sql = "SELECT * FROM user where id = %s"
     val = [int(session["user"])]
     cursor.execute(sql, val)
     result = cursor.fetchone()
+    db.commit()
+    cursor.close()
     if not result:
         return {
             "error": "not signed in"
         }, 401
     global user
-    user = convertUser(result)
+    user = result
 
-def convertUser(info):
-    return {
-        "id": info[0],
-        "email": info[2],
-        "role": info[1]
-    }
+class Role(Enum):
+    USER = 0
+    EDITOR = 1
+    ADMIN = 2

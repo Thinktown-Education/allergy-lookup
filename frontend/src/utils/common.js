@@ -13,5 +13,19 @@ var common = {
       value === '' || value == null || value === undefined || value === [] || value.length === 0
     )
   },
+
+  getRole: function () {
+    return sessionStorage.getItem('role')
+  },
+
+  getRoleName: function () {
+    var value = sessionStorage.getItem('role')
+    var roles = {
+      0: 'User',
+      1: 'Editor',
+      2: 'Admin',
+    }
+    return roles[value]
+  },
 }
 export default common

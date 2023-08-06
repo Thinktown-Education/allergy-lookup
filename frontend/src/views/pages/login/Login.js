@@ -44,7 +44,6 @@ const Login = () => {
           password,
         })
         .then((response) => {
-          console.log(response.data)
           if (response.data.code == 0) {
             navigate('/')
           } else {
@@ -52,6 +51,10 @@ const Login = () => {
           }
         })
     }
+  }
+
+  const forgetClick = async (e) => {
+    addToast(errorToast('Feature not ready'))
   }
 
   const errorToast = (errorMessage) => (
@@ -119,7 +122,7 @@ const Login = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
+                        <CButton color="link" className="px-0" onClick={forgetClick}>
                           Forgot password?
                         </CButton>
                       </CCol>

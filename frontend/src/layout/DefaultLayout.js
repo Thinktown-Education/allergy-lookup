@@ -6,6 +6,7 @@ import api from 'src/api/api'
 const DefaultLayout = ({ token }) => {
   api.auth.heartbeat().then((response) => {
     sessionStorage.setItem('email', response.data.data.email)
+    sessionStorage.setItem('role', response.data.data.role)
   })
 
   return (

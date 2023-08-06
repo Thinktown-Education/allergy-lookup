@@ -46,6 +46,9 @@ const errorHandle = (status, other) => {
     case 404:
       alert('请求的资源不存在')
       break
+    case 500:
+      window.location.href = '/500'
+      break
     default:
       console.log(other)
   }
