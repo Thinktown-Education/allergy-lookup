@@ -6,13 +6,16 @@ from enum import Enum
 
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
-db = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="admin",
-  database="allergy"
-)
 user = None
+
+def getConnector():
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="admin",
+        database="allergy"
+    )
+    return db
 
 @cross_origin()
 @main.route("/heartbeat")
@@ -29,6 +32,7 @@ def heartbeat():
 @cross_origin()
 @main.route('/findFood/<name>')
 def findFood(name):
+    db = getConnector()
     cursor = db.cursor(dictionary = True)
     blurName = '%' + name + '%' # SQL中使用%符号进行模糊查询
     cursor.execute("""
@@ -45,8 +49,8 @@ def findFood(name):
             id_food = %s""", [food["id"]])
         food["ingredients"] = cursor.fetchall()
 
-    db.commit()
     cursor.close()
+    db.close()
     return {
         "code": 0,
         "error": "",
@@ -56,14 +60,15 @@ def findFood(name):
 @cross_origin()
 @main.route('/findIngredients/<name>')
 def findIngredients(name):
+    db = getConnector()
     cursor = db.cursor(dictionary = True)
     blurName = '%' + name + '%'
     cursor.execute("""
                    SELECT * FROM ingredient
                    WHERE ing_name_lower LIKE LOWER(%s)""", [blurName])
     result = cursor.fetchall()
-    db.commit()
     cursor.close()
+    db.close()
     return {
         "code": 0,
         "error": "",
@@ -122,6 +127,7 @@ def findFoodByIngredients():
         count = {idCount}
     """
 
+    db = getConnector()
     cursor = db.cursor(dictionary=True)
     cursor.execute(queryTemplate)
     queryResult = cursor.fetchall()
@@ -138,8 +144,8 @@ def findFoodByIngredients():
         cursor.execute(query)
         food['ingredients'] = cursor.fetchall()
 
-    db.commit()
     cursor.close()
+    db.close()
     return {
         "code": 0,
         "error": "",
@@ -159,13 +165,15 @@ def check_session():
         return {
             "error": "not signed in"
         }, 401
+    db = getConnector()
     cursor = db.cursor(dictionary = True)
     sql = "SELECT * FROM user where id = %s"
     val = [int(session["user"])]
+    print(session["user"])
     cursor.execute(sql, val)
     result = cursor.fetchone()
-    db.commit()
     cursor.close()
+    db.close()
     if not result:
         return {
             "error": "not signed in"
