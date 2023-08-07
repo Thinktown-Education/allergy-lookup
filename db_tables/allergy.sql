@@ -11,7 +11,7 @@
  Target Server Version : 80033 (8.0.33)
  File Encoding         : 65001
 
- Date: 06/08/2023 10:53:30
+ Date: 06/08/2023 21:20:36
 */
 
 SET NAMES utf8mb4;
@@ -30,13 +30,23 @@ CREATE TABLE `food`  (
   `created` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of food
 -- ----------------------------
 INSERT INTO `food` VALUES (5, 'Coca-Cola', 'coca-cola', 'Coca-Cola', 'coca-cola', '2023-08-03 06:35:27', '2023-08-03 06:35:27');
 INSERT INTO `food` VALUES (6, 'Sprite', 'sprite', 'Coca-Cola', 'coca-cola', '2023-08-03 07:01:11', '2023-08-03 07:01:11');
+INSERT INTO `food` VALUES (7, 'Fanta', 'fanta', 'Coca-Cola', 'coca-cola', '2023-08-07 03:01:29', '2023-08-07 03:01:29');
+INSERT INTO `food` VALUES (8, 'Cookie', 'cookie', 'Oreo', 'oreo', '2023-08-07 03:01:44', '2023-08-07 03:01:44');
+INSERT INTO `food` VALUES (9, 'Trash', 'trash', 'Garbo', 'garbo', '2023-08-07 03:01:56', '2023-08-07 03:01:56');
+INSERT INTO `food` VALUES (10, 'Chicken wing', 'chicken wing', 'Random', 'random', '2023-08-07 03:02:25', '2023-08-07 03:02:25');
+INSERT INTO `food` VALUES (11, 'Pepsi', 'pepsi', 'Pepsi', 'pepsi', '2023-08-07 03:02:34', '2023-08-07 03:02:34');
+INSERT INTO `food` VALUES (12, '7Up', '7up', 'Pepsi', 'pepsi', '2023-08-07 03:02:53', '2023-08-07 03:02:53');
+INSERT INTO `food` VALUES (13, 'Chips', 'chips', 'Lays', 'lays', '2023-08-07 03:03:10', '2023-08-07 03:03:10');
+INSERT INTO `food` VALUES (14, 'Cheetos', 'cheetos', 'Cheetos', 'cheetos', '2023-08-07 03:03:29', '2023-08-07 03:03:29');
+INSERT INTO `food` VALUES (15, 'Mountain Dew', 'mountain dew', 'pepsi', 'pepsi', '2023-08-07 03:03:48', '2023-08-07 03:03:48');
+INSERT INTO `food` VALUES (16, 'Cat', 'cat', 'wildcat', 'wildcat', '2023-08-07 03:04:03', '2023-08-07 03:04:03');
 
 -- ----------------------------
 -- Table structure for food_ingredient
@@ -106,11 +116,12 @@ CREATE TABLE `user`  (
   `created` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
 INSERT INTO `user` VALUES (14, 2, 'kolxy@qq.com', '21232f297a57a5a743894a0e4a801fc3', '2023-05-27 08:27:49', NULL);
+INSERT INTO `user` VALUES (15, 0, 'aaa@qq.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2023-08-07 04:08:33', NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
