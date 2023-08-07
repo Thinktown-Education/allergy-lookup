@@ -10,6 +10,8 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle,
+  CForm,
+  CFormText,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCloudDownload } from '@coreui/icons'
@@ -112,26 +114,18 @@ export default function Food() {
           <CModalTitle>Add new food</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <Box
-            component="form"
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '25ch' },
-            }}
-            noValidate
-            autoComplete="off"
-          >
-            <div>
-              <TextField
-                required
-                id="food-name"
-                label="Food name"
-              />
-              <TextField
-                id="food-brand"
-                label="Brand"
-              />
-            </div>
-          </Box>
+        <CForm>
+          <CFormInput
+            id="exampleFormControlInput1"
+            label="Email address"
+            placeholder="name@example.com"
+          />
+          <CFormInput
+            id="exampleFormControlInput1"
+            label="Email address"
+            placeholder="name@example.com"
+          />
+        </CForm>
         </CModalBody>
         <CModalFooter>
           <CButton color="secondary" onClick={() => setVisible(false)}>
