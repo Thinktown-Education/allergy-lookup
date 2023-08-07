@@ -24,13 +24,13 @@ var menu = {
         {
           component: CNavItem,
           name: 'Edit Food',
-          to: '/base/brightness',
+          to: '/editor/food',
           icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
         }, 
         {
           component: CNavItem,
           name: 'Edit Ingredients',
-          to: '/dashboard',
+          to: '/editor/ingredients',
           icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
         }, 
       )
@@ -45,7 +45,7 @@ var menu = {
         {
           component: CNavItem,
           name: 'Permission',
-          to: '/base/other',
+          to: '/admin/permission',
           icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
         }, 
       )

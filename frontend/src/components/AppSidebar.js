@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
@@ -10,11 +10,13 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 
 import thinktown from 'src/assets/images/thinktown.png'
+import menu from 'src/menu'
 
-const AppSidebar = ({ navigation }) => {
+const AppSidebar = ({ role }) => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const navigation = menu.build(role)
 
   return (
     <CSidebar

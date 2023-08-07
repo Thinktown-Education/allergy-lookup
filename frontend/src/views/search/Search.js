@@ -44,7 +44,7 @@ function CustomTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Grid container sx={{ p: 3 }}>
+        <Grid container sx={{ py: 3 }}>
           {children}
         </Grid>
       )}
@@ -77,7 +77,9 @@ export default function Search() {
   const searchFood = debounce((food) => {
     if (!common.isEmpty(food)) {
       setLoading(true)
-      api.food.findFood(food).then((response) => {
+      api.food.findFood({
+        name: food
+      }).then((response) => {
         setLoading(false)
         if (response.data.code == 0) {
           setList(response.data.data)
@@ -91,7 +93,9 @@ export default function Search() {
 
   const loadOptions = debounce((input, callback) => {
     if (!common.isEmpty(input)) {
-      api.food.findIngredients(input).then((response) => {
+      api.food.findIngredients({
+        name: input
+      }).then((response) => {
         if (response.data.code == 0) {
           var options = []
           response.data.data.forEach(item => {

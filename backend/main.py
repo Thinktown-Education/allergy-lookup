@@ -30,8 +30,15 @@ def heartbeat():
     }
 
 @cross_origin()
-@main.route('/findFood/<name>')
-def findFood(name):
+@main.route('/findFood')
+def findFood():
+    name = request.args.get('name')
+    if name == None:
+        return {
+            "code": 1,
+            "error": "Invalid request"
+        }
+    
     db = getConnector()
     cursor = db.cursor(dictionary = True)
     blurName = '%' + name + '%' # SQL中使用%符号进行模糊查询
@@ -58,8 +65,15 @@ def findFood(name):
     }
 
 @cross_origin()
-@main.route('/findIngredients/<name>')
-def findIngredients(name):
+@main.route('/findIngredients')
+def findIngredients():
+    name = request.args.get('name')
+    if not name:
+        return {
+            "code": 1,
+            "error": "Invalid request"
+        }
+    
     db = getConnector()
     cursor = db.cursor(dictionary = True)
     blurName = '%' + name + '%'
@@ -169,7 +183,6 @@ def check_session():
     cursor = db.cursor(dictionary = True)
     sql = "SELECT * FROM user where id = %s"
     val = [int(session["user"])]
-    print(session["user"])
     cursor.execute(sql, val)
     result = cursor.fetchone()
     cursor.close()

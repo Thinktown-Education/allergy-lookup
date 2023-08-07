@@ -1,6 +1,11 @@
+import { exact } from 'prop-types'
 import React from 'react'
 
 const Search = React.lazy(() => import('./views/search/Search'))
+const Food = React.lazy(() => import('./views/editor/Food'))
+const Ingredients = React.lazy(() => import('./views/editor/Ingredients'))
+const Permission = React.lazy(() => import('./views/admin/Permission'))
+
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
@@ -53,8 +58,13 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Home' },
-  { path: '/search', name: 'Search', element: Search },
+  { path: '/', exact: true, name: 'home' },
+  { path: '/search', name: 'search', element: Search },
+  { path: '/editor', name: 'editor', exact: true },
+  { path: '/editor/food', name: 'food', element: Food },
+  { path: '/editor/ingredients', name: 'ingredients', element: Ingredients },
+  { path: '/admin', name: 'admin', exact: true },
+  { path: '/admin/permission', name: 'permission', element: Permission },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
