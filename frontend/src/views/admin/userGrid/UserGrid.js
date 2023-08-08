@@ -19,11 +19,10 @@ export function UserGrid() {
   const [textInput, setTextInput] = React.useState('')
   const [visible, setVisible] = React.useState(false)
 
-  const getUsers = debounce((input) => {
+  const getPermission = debounce((input) => {
     setTextInput(input)
     setLoading(true)
-    api.permission
-      .getUsers()
+    api.permission.getPermission()
       .then((response) => {
         setLoading(false)
         if (response.data.code == 0) {
@@ -43,8 +42,7 @@ export function UserGrid() {
   React.useEffect(() => {
     if (textInput == '' && data.length == 0) {
       console.log('test')
-      api.permission
-        .getUsers()
+      api.permission.getPermission()
         .then((response) => {
           setLoading(false)
           if (response.data.code == 0) {
@@ -59,13 +57,6 @@ export function UserGrid() {
   return (
     <>
       <Grid container sx={{ py: 3 }}>
-        <Grid item xs={10}>
-          <CFormInput
-            placeholder="Search food name or brand name"
-            aria-label="FoodSearch"
-            onChange={(e) => searchFood(e.target.value)}
-          />
-        </Grid>
         <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
           {loadingIcon()}
         </Grid>
