@@ -1,11 +1,5 @@
 import * as React from 'react'
-import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CRow,
-} from '@coreui/react'
+import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
 export default function Food() {
   return (
     <CRow>
@@ -14,9 +8,7 @@ export default function Food() {
           <CCardHeader>
             <strong>Search Table</strong>
           </CCardHeader>
-          <CCardBody>
-            body
-          </CCardBody>
+          <CCardBody>body</CCardBody>
         </CCard>
       </CCol>
     </CRow>

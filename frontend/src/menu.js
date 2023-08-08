@@ -14,7 +14,7 @@ var menu = {
         icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
       },
     ]
-    
+
     if (role >= consts.Role.EDITOR) {
       nav.push(
         {
@@ -26,16 +26,16 @@ var menu = {
           name: 'Edit Food',
           to: '/editor/food',
           icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-        }, 
+        },
         {
           component: CNavItem,
           name: 'Edit Ingredients',
           to: '/editor/ingredients',
           icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
-        }, 
+        },
       )
     }
-    
+
     if (role >= consts.Role.ADMIN) {
       nav.push(
         {
@@ -47,11 +47,11 @@ var menu = {
           name: 'Permission',
           to: '/admin/permission',
           icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
-        }, 
+        },
       )
     }
     return nav
-  }
+  },
 }
 
 export default menu

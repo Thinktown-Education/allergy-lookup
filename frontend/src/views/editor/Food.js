@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { debounce } from 'lodash'
-import { 
+import {
   CButton,
-  CCard, 
-  CCardBody, 
+  CCard,
+  CCardBody,
   CFormInput,
   CModal,
   CModalBody,
@@ -13,45 +13,44 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCloudDownload } from '@coreui/icons'
-import { DataGrid } from "@mui/x-data-grid";
-import Button from '@mui/material/Button';
+import { DataGrid } from '@mui/x-data-grid'
+import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
 
 import common from 'src/utils/common'
 import api from 'src/api/api'
 import './editor.css'
 
 const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "food_name", headerName: "Name", width: 200 },
-  { field: "brand", headerName: "Brand", width: 200 },
-  { field: "modified",
-    headerName: "Last Updated",
-    width: 400
-  },
-];
+  { field: 'id', headerName: 'ID', width: 70 },
+  { field: 'food_name', headerName: 'Name', width: 200 },
+  { field: 'brand', headerName: 'Brand', width: 200 },
+  { field: 'modified', headerName: 'Last Updated', width: 400 },
+]
 
 export default function Food() {
   const [loading, setLoading] = React.useState(false)
   const [data, setData] = React.useState([])
-  const [textInput, setTextInput] = React.useState("")
+  const [textInput, setTextInput] = React.useState('')
   const [visible, setVisible] = React.useState(false)
 
   const searchFood = debounce((input) => {
     setTextInput(input)
     setLoading(true)
-    api.food.findFood({
-      name: input
-    }).then((response) => {
-      setLoading(false)
-      if (response.data.code == 0) {
-        setData(response.data.data)
-      } else {
-        console.log(response.data.error)
-      }
-    })
+    api.food
+      .findFood({
+        name: input,
+      })
+      .then((response) => {
+        setLoading(false)
+        if (response.data.code == 0) {
+          setData(response.data.data)
+        } else {
+          console.log(response.data.error)
+        }
+      })
   }, 500)
 
   const loadingIcon = () => {
@@ -61,18 +60,20 @@ export default function Food() {
   }
 
   React.useEffect(() => {
-    if (textInput == "" && data.length == 0) {
+    if (textInput == '' && data.length == 0) {
       console.log('test')
-      api.food.findFood({
-        name: ""
-      }).then((response) => {
-        setLoading(false)
-        if (response.data.code == 0) {
-          setData(response.data.data)
-        } else {
-          console.log(response.data.error)
-        }
-      })
+      api.food
+        .findFood({
+          name: '',
+        })
+        .then((response) => {
+          setLoading(false)
+          if (response.data.code == 0) {
+            setData(response.data.data)
+          } else {
+            console.log(response.data.error)
+          }
+        })
     }
   })
 
@@ -88,11 +89,18 @@ export default function Food() {
                 onChange={(e) => searchFood(e.target.value)}
               />
             </Grid>
-            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
+            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
               {loadingIcon()}
             </Grid>
-            <Grid item xs={1}  style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }} >
-              <Button variant="outlined" onClick={() => setVisible(!visible)}> Add </Button>
+            <Grid
+              item
+              xs={1}
+              style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}
+            >
+              <Button variant="outlined" onClick={() => setVisible(!visible)}>
+                {' '}
+                Add{' '}
+              </Button>
             </Grid>
           </Grid>
           <DataGrid
@@ -100,8 +108,8 @@ export default function Food() {
             columns={columns}
             initialState={{
               pagination: {
-                paginationModel: { page: 0, pageSize: 10 }
-              }
+                paginationModel: { page: 0, pageSize: 10 },
+              },
             }}
             pageSizeOptions={[10, 20, 50, { value: data.length, label: 'All' }]}
           />
@@ -121,15 +129,8 @@ export default function Food() {
             autoComplete="off"
           >
             <div>
-              <TextField
-                required
-                id="food-name"
-                label="Food name"
-              />
-              <TextField
-                id="food-brand"
-                label="Brand"
-              />
+              <TextField required id="food-name" label="Food name" />
+              <TextField id="food-brand" label="Brand" />
             </div>
           </Box>
         </CModalBody>
