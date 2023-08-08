@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { debounce } from 'lodash'
 import { CCard, CFormInput, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-import { DataGrid, GridCellParams, GridCellModes, GridCellModesModel, GridRowsProp, GridColDef, GridCell } from '@mui/x-data-grid'
+import { DataGrid, GridCellParams, GridCellModes, GridCellModesModel, GridRowsProp, GridColDef, GridCell, useGridApiRef } from '@mui/x-data-grid'
 
 import api from 'src/api/api'
 
@@ -47,65 +47,11 @@ export function UserGrid() {
     fetchUsers()
   }, [])
 
-  const [cellModesModel, setCellModesModel] = React.useState({});
-
-  const handleCellClick = React.useCallback(
-    (params, event) => {
-      if (!params.isEditable) {
-        return;
-      }
-
-      // Ignore portal
-      if (!event.currentTarget.contains(event.target)) {
-        return;
-      }
-
-      setCellModesModel((prevModel) => {
-        return {
-          // Revert the mode of the other cells from other rows
-          ...Object.keys(prevModel).reduce(
-            (acc, id) => ({
-              ...acc,
-              [id]: Object.keys(prevModel[id]).reduce(
-                (acc2, field) => ({
-                  ...acc2,
-                  [field]: { mode: GridCellModes.View },
-                }),
-                {},
-              ),
-            }),
-            {},
-          ),
-          [params.id]: {
-            // Revert the mode of other cells in the same row
-            ...Object.keys(prevModel[params.id] || {}).reduce(
-              (acc, field) => ({ ...acc, [field]: { mode: GridCellModes.View } }),
-              {},
-            ),
-            [params.field]: { mode: GridCellModes.Edit },
-          },
-        };
-      });
-    },
-    [],
-  );
-
-  const handleCellModesModelChange = React.useCallback(
-    (newModel) => {
-      setCellModesModel(newModel);
-    },
-    [],
-  );
-
   return (
     <>
       <DataGrid
         rows={data}
         columns={columns}
-        cellModesModel={cellModesModel}
-        onCellModesModelChange={handleCellModesModelChange}
-        onCellClick={handleCellClick}
-
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 10 },
