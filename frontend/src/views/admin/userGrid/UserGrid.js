@@ -7,20 +7,27 @@ import Grid from '@mui/material/Grid'
 
 import api from 'src/api/api'
 
+const roles = {
+  0: "USER",
+  1: "EDITOR",
+  2: "ADMIN",
+}
+
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'user_role', headerName: 'Role', width: 200 },
-  { field: 'user_email', headerName: 'Email', width: 200 },
+  { field: 'role', headerName: 'Role', width: 200 },
+  { field: 'email', headerName: 'Email', width: 200 },
+  { field: 'modified', headerName: 'Last Updated', width: 400 },
 ]
 
 export function UserGrid() {
   const [loading, setLoading] = React.useState(false)
   const [data, setData] = React.useState([])
+  let gridData;
   const [textInput, setTextInput] = React.useState('')
   const [visible, setVisible] = React.useState(false)
 
   const getPermission = debounce((input) => {
-    setTextInput(input)
     setLoading(true)
     api.permission.getPermission()
       .then((response) => {
@@ -40,13 +47,18 @@ export function UserGrid() {
   }
 
   React.useEffect(() => {
-    if (textInput == '' && data.length == 0) {
+    if (data.length == 0) {
       console.log('test')
       api.permission.getPermission()
         .then((response) => {
           setLoading(false)
           if (response.data.code == 0) {
-            setData(response.data.data)
+            console.log(response.data.data)
+            const data = response.data.data.map((item) => {
+              const { id, role, email, modified } = item
+              return { id, role: roles[role], email, modified }
+            })
+            setData(data)
           } else {
             console.log(response.data.error)
           }
@@ -59,16 +71,6 @@ export function UserGrid() {
       <Grid container sx={{ py: 3 }}>
         <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
           {loadingIcon()}
-        </Grid>
-        <Grid
-          item
-          xs={1}
-          style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}
-        >
-          <Button variant="outlined" onClick={() => setVisible(!visible)}>
-            {' '}
-            Add{' '}
-          </Button>
         </Grid>
       </Grid>
       <DataGrid

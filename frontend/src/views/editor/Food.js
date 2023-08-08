@@ -25,7 +25,7 @@ import './editor.css'
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'food_name', headerName: 'Name', width: 200 },
+  { field: 'food_name', headername: 'name', width: 200 },
   { field: 'brand', headerName: 'Brand', width: 200 },
   { field: 'modified', headerName: 'Last Updated', width: 400 },
 ]
@@ -81,6 +81,7 @@ export default function Food() {
     <>
       <CCard>
         <CCardBody>
+          {/* Search box */}
           <Grid container sx={{ py: 3 }}>
             <Grid item xs={10}>
               <CFormInput
@@ -89,6 +90,7 @@ export default function Food() {
                 onChange={(e) => searchFood(e.target.value)}
               />
             </Grid>
+
             <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
               {loadingIcon()}
             </Grid>
