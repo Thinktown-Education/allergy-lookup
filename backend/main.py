@@ -126,9 +126,7 @@ def findFoodByIngredients():
 
     queryTemplate = f"""
     SELECT
-        id,
-        food_name,
-        brand,
+        food.*,
         count(1) AS count 
     FROM
         food
@@ -164,6 +162,57 @@ def findFoodByIngredients():
         "code": 0,
         "error": "",
         "data": queryResult
+    }
+
+@cross_origin()
+@main.route('/addFood', methods = ['POST'])
+def addFood():
+    data = request.get_json(silent=True)
+    if data == None:
+        data = request.form
+
+    if "food_name" not in data \
+        or "brand" not in data \
+        or "image_url" not in data \
+        or "ingredients" not in data:
+        return {
+            "code": 1,
+            "error": "Incorrect data format"
+        }
+        
+    ingredientsId = data["ingredients"]
+    if not isinstance(ingredientsId, list):
+        return {
+            "code": 1,
+            "error": "Incorrect data format"
+        }
+    
+    if len(ingredientsId) == 0:
+        return {
+            "code": 0,
+            "error": "",
+            "data": []
+        }
+    
+    inputList = [data['food_name'], data['food_name'], data['brand'], data['brand'], data['image_url']]
+    db = getConnector()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("""
+    INSERT INTO food (food_name, food_name_lower, brand, brand_lower, image_url) VALUES 
+                   (%s, LOWER(%s), %s, LOWER(%s), %s)
+    """, inputList)
+
+    foodId = cursor.lastrowid
+    for ingId in ingredientsId:
+        print(f"""INSERT INTO food_ingredient (id_food, id_ing) VALUES ({foodId}, {ingId})""")
+        cursor.execute(f"""INSERT INTO food_ingredient (id_food, id_ing) VALUES ({foodId}, {ingId})""")
+    
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
     }
 
 """

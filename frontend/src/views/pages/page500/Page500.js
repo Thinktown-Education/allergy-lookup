@@ -13,6 +13,9 @@ const Page500 = () => {
               <p className="text-medium-emphasis float-start">
                 The page you are looking for is temporarily unavailable.
               </p>
+              <p className="text-medium-emphasis float-start">
+                Please contact Fang at <code>fang@fang.com</code>
+              </p>
             </span>
           </CCol>
         </CRow>

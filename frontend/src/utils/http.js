@@ -24,7 +24,7 @@ import common from './common'
  * 请求失败后的错误统一处理
  * @param {Number} status 请求失败的状态码
  */
-const errorHandle = (status, other) => {
+const errorHandle = (status) => {
   // 状态码判断
   switch (status) {
     // 401: 未登录状态，跳转登录页
@@ -50,7 +50,7 @@ const errorHandle = (status, other) => {
       window.location.href = '/500'
       break
     default:
-      console.log(other)
+      alert("Error status: " + status)
   }
 }
 
@@ -91,7 +91,7 @@ http.interceptors.response.use(
     const { response } = error
     if (response) {
       // 请求已发出，但是不在2xx的范围
-      errorHandle(response.status, response.data.message)
+      errorHandle(response.status)
       return Promise.reject(response)
     } else {
       // 处理断网的情况
@@ -103,6 +103,7 @@ http.interceptors.response.use(
       // } else {
       //     return Promise.reject(error);
       // }
+      window.location.href = '/500'
       return Promise.reject(error)
     }
   },
