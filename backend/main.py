@@ -166,6 +166,24 @@ def findFoodByIngredients():
         "data": queryResult
     }
 
+@cross_origin()
+@main.route('/permission')
+def getPermission():
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("""
+                   SELECT * FROM user
+                   """)
+    result = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "",
+        "data": result
+    }
+
 """
 所有需要登陆状态的请求都必须经过session检查
 """
