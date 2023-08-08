@@ -176,9 +176,7 @@ def findFoodByIngredients():
 def getPermission():
     db = getConnector()
     cursor = db.cursor(dictionary = True)
-    cursor.execute("""
-                   SELECT * FROM user
-                   """)
+    cursor.execute("""SELECT * FROM user""")
     result = cursor.fetchall()
 
     cursor.close()

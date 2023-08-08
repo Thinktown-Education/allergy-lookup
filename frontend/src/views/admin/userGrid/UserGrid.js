@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { debounce } from 'lodash'
 import { CCard, CFormInput, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-import { DataGrid } from '@mui/x-data-grid'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import { DataGrid, GridCellParams, GridCellModes, GridCellModesModel, GridRowsProp, GridColDef, GridCell } from '@mui/x-data-grid'
 
 import api from 'src/api/api'
 
@@ -17,65 +15,97 @@ const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
   { field: 'role', headerName: 'Role', width: 200 },
   { field: 'email', headerName: 'Email', width: 200 },
-  { field: 'modified', headerName: 'Last Updated', width: 400 },
 ]
 
-export function UserGrid() {
-  const [loading, setLoading] = React.useState(false)
-  const [data, setData] = React.useState([])
-  let gridData;
-  const [textInput, setTextInput] = React.useState('')
-  const [visible, setVisible] = React.useState(false)
-
-  const getPermission = debounce((input) => {
-    setLoading(true)
-    api.permission.getPermission()
-      .then((response) => {
-        setLoading(false)
-        if (response.data.code == 0) {
-          setData(response.data.data)
-        } else {
-          console.log(response.data.error)
-        }
-      })
-  }, 500)
-
-  const loadingIcon = () => {
-    if (loading) {
-      return <CIcon icon={cilCloudDownload} />
-    }
+const mapData = (data) => {
+  const mapDataItem = ({ id, role, email }) => {
+    return { id, role: roles[role], email }
   }
+  return data.map((item) => mapDataItem(item))
+}
+
+export function UserGrid() {
+  const [data, setData] = React.useState([])
+  const [cell, setCell] = React.useState({})
 
   React.useEffect(() => {
-    if (data.length == 0) {
-      console.log('test')
-      api.permission.getPermission()
-        .then((response) => {
-          setLoading(false)
-          if (response.data.code == 0) {
-            console.log(response.data.data)
-            const data = response.data.data.map((item) => {
-              const { id, role, email, modified } = item
-              return { id, role: roles[role], email, modified }
-            })
-            setData(data)
-          } else {
-            console.log(response.data.error)
-          }
-        })
+    async function fetchUsers() {
+      try {
+        const response = await api.permission.getPermission()
+        console.log(response)
+        if (response.data.code != 0) {
+          throw new Error('cannot fetch users from /permission')
+        }
+        const rowData = mapData(response.data.data)
+        console.log(rowData)
+        setData(rowData)
+      }
+      catch (error) {
+        console.log(response.data.error)
+      }
     }
-  })
+    fetchUsers()
+  }, [])
+
+  const [cellModesModel, setCellModesModel] = React.useState({});
+
+  const handleCellClick = React.useCallback(
+    (params, event) => {
+      if (!params.isEditable) {
+        return;
+      }
+
+      // Ignore portal
+      if (!event.currentTarget.contains(event.target)) {
+        return;
+      }
+
+      setCellModesModel((prevModel) => {
+        return {
+          // Revert the mode of the other cells from other rows
+          ...Object.keys(prevModel).reduce(
+            (acc, id) => ({
+              ...acc,
+              [id]: Object.keys(prevModel[id]).reduce(
+                (acc2, field) => ({
+                  ...acc2,
+                  [field]: { mode: GridCellModes.View },
+                }),
+                {},
+              ),
+            }),
+            {},
+          ),
+          [params.id]: {
+            // Revert the mode of other cells in the same row
+            ...Object.keys(prevModel[params.id] || {}).reduce(
+              (acc, field) => ({ ...acc, [field]: { mode: GridCellModes.View } }),
+              {},
+            ),
+            [params.field]: { mode: GridCellModes.Edit },
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const handleCellModesModelChange = React.useCallback(
+    (newModel) => {
+      setCellModesModel(newModel);
+    },
+    [],
+  );
 
   return (
     <>
-      <Grid container sx={{ py: 3 }}>
-        <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
-          {loadingIcon()}
-        </Grid>
-      </Grid>
       <DataGrid
         rows={data}
         columns={columns}
+        cellModesModel={cellModesModel}
+        onCellModesModelChange={handleCellModesModelChange}
+        onCellClick={handleCellClick}
+
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 10 },
