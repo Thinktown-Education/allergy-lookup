@@ -8,6 +8,7 @@ main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
 user = None
 
+
 def getConnector():
     db = mysql.connector.connect(
         host="localhost",
@@ -16,6 +17,7 @@ def getConnector():
         database="allergy"
     )
     return db
+
 
 @cross_origin()
 @main.route("/heartbeat")
@@ -29,6 +31,7 @@ def heartbeat():
         }
     }
 
+
 @cross_origin()
 @main.route('/findFood')
 def findFood():
@@ -38,10 +41,10 @@ def findFood():
             "code": 1,
             "error": "Invalid request"
         }
-    
+
     db = getConnector()
-    cursor = db.cursor(dictionary = True)
-    blurName = '%' + name + '%' # SQL中使用%符号进行模糊查询
+    cursor = db.cursor(dictionary=True)
+    blurName = '%' + name + '%'  # SQL中使用%符号进行模糊查询
     cursor.execute("""
                    SELECT * FROM food 
                    WHERE food_name_lower LIKE LOWER(%s) or brand_lower LIKE LOWER(%s)""", [blurName, blurName])
@@ -64,6 +67,7 @@ def findFood():
         "data": result
     }
 
+
 @cross_origin()
 @main.route('/findIngredients')
 def findIngredients():
@@ -73,9 +77,9 @@ def findIngredients():
             "code": 1,
             "error": "Invalid request"
         }
-    
+
     db = getConnector()
-    cursor = db.cursor(dictionary = True)
+    cursor = db.cursor(dictionary=True)
     blurName = '%' + name + '%'
     cursor.execute("""
                    SELECT * FROM ingredient
@@ -89,8 +93,9 @@ def findIngredients():
         "data": result
     }
 
+
 @cross_origin()
-@main.route('/findFoodByIngredients', methods = ['POST'])
+@main.route('/findFoodByIngredients', methods=['POST'])
 def findFoodByIngredients():
     data = request.get_json(silent=True)
     if data == None:
@@ -101,28 +106,28 @@ def findFoodByIngredients():
             "code": 1,
             "error": "Incorrect data format"
         }
-    
+
     ingredientsId = data["ingredients"]
     if not isinstance(ingredientsId, list):
         return {
             "code": 1,
             "error": "Incorrect data format"
         }
-    
+
     if len(ingredientsId) == 0:
         return {
             "code": 0,
             "error": "",
             "data": []
         }
-    
+
     # 使用set类型对id进行去重
-    idSet = set() 
+    idSet = set()
     for iId in ingredientsId:
         idSet.add(iId)
-    
+
     idCount = len(idSet)
-    idFormat = str(idSet)[1:-1] # 去除首尾花括号
+    idFormat = str(idSet)[1:-1]  # 去除首尾花括号
 
     queryTemplate = f"""
     SELECT
@@ -187,18 +192,20 @@ def getPermission():
 """
 所有需要登陆状态的请求都必须经过session检查
 """
+
+
 @cross_origin()
 @main.before_request
 def check_session():
     if request.method == "OPTIONS":
         return {}
-    
+
     if "user" not in session:
         return {
             "error": "not signed in"
         }, 401
     db = getConnector()
-    cursor = db.cursor(dictionary = True)
+    cursor = db.cursor(dictionary=True)
     sql = "SELECT * FROM user where id = %s"
     val = [int(session["user"])]
     cursor.execute(sql, val)
@@ -211,6 +218,7 @@ def check_session():
         }, 401
     global user
     user = result
+
 
 class Role(Enum):
     USER = 0

@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
-export default function Food() {
+import { UserGrid } from "./userGrid/UserGrid.js"
+
+export default function Permission() {
   return (
     <CRow>
       <CCol xs={12}>
@@ -8,7 +10,10 @@ export default function Food() {
           <CCardHeader>
             <strong>Search Table</strong>
           </CCardHeader>
-          <CCardBody>body</CCardBody>
+          <CCardBody>
+            <h1>placeholder body</h1>
+            <UserGrid />
+          </CCardBody>
         </CCard>
       </CCol>
     </CRow>

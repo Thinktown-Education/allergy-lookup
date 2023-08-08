@@ -5,7 +5,7 @@ import permission from './permission.js'
 const api = {
   auth,
   food,
-  permission
+  permission,
 }
 // 导出接口
 export default api
