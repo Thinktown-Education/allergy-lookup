@@ -49,6 +49,9 @@ const errorHandle = (status, other) => {
     case 500:
       window.location.href = '/500'
       break
+    case 500:
+      window.location.href = '/500'
+      break
     default:
       console.log(other)
   }

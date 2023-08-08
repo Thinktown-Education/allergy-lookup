@@ -6,8 +6,8 @@ import Tab from '@mui/material/Tab'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import TableContainer from '@mui/material/TableContainer'
-import Chip from '@mui/material/Chip'
-import AsyncSelect from 'react-select/async'
+import Chip from '@mui/material/Chip';
+import AsyncSelect from 'react-select/async';
 import {
   CButton,
   CCard,
@@ -77,50 +77,46 @@ export default function Search() {
   const searchFood = debounce((food) => {
     if (!common.isEmpty(food)) {
       setLoading(true)
-      api.food
-        .findFood({
-          name: food,
-        })
-        .then((response) => {
-          setLoading(false)
-          if (response.data.code == 0) {
-            setList(response.data.data)
-          } else {
-            console.log(response.data.error)
-          }
-        })
+      api.food.findFood({
+        name: food
+      }).then((response) => {
+        setLoading(false)
+        if (response.data.code == 0) {
+          setList(response.data.data)
+        } else {
+          console.log(response.data.error)
+        }
+      })
     }
     console.log('Searching: ' + food)
   }, 500)
 
   const loadOptions = debounce((input, callback) => {
     if (!common.isEmpty(input)) {
-      api.food
-        .findIngredients({
-          name: input,
-        })
-        .then((response) => {
-          if (response.data.code == 0) {
-            var options = []
-            response.data.data.forEach((item) => {
-              options.push({
-                value: item['id'],
-                label: item['ing_name'],
-              })
+      api.food.findIngredients({
+        name: input
+      }).then((response) => {
+        if (response.data.code == 0) {
+          var options = []
+          response.data.data.forEach(item => {
+            options.push({
+              value: item['id'],
+              label: item['ing_name'],
             })
-            callback(options)
-          } else {
-            console.log(response.data.error)
-          }
-        })
+          });
+          callback(options)
+        } else {
+          console.log(response.data.error)
+        }
+      })
     }
   }, 500)
 
   const searchIngredients = debounce((ids) => {
     if (!common.isEmpty(ids)) {
       setLoading(true)
-      ids = ids.map((item) => item.value)
-      var requestBody = { ingredients: ids }
+      ids = ids.map(item => item.value)
+      var requestBody = {ingredients: ids}
       api.food.findFoodByIngredients(requestBody).then((response) => {
         setLoading(false)
         if (response.data.code == 0) {
@@ -144,10 +140,8 @@ export default function Search() {
         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
         <CTableDataCell>{item['food_name']}</CTableDataCell>
         <CTableDataCell>{item['brand']}</CTableDataCell>
-        <CTableDataCell>
-          {item['ingredients'] &&
-            item['ingredients'].map((item, index) => populateIngredients(item, index))}
-        </CTableDataCell>
+        <CTableDataCell>{item['ingredients'] &&
+          item['ingredients'].map((item, index) => populateIngredients(item, index))}</CTableDataCell>
       </CTableRow>
     )
   }
@@ -184,28 +178,15 @@ export default function Search() {
                     onChange={(e) => searchFood(e.target.value)}
                   />
                 </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}
-                >
+                <Grid item xs={2} style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }} >
                   {loadingIcon()}
                 </Grid>
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
                 <Grid item xs={10}>
-                  <AsyncSelect
-                    cacheOptions
-                    isMulti
-                    loadOptions={loadOptions}
-                    onChange={searchIngredients}
-                  />
+                  <AsyncSelect cacheOptions isMulti loadOptions={loadOptions} onChange={searchIngredients}/>
                 </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}
-                >
+                <Grid item xs={2} style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }}>
                   {loadingIcon()}
                 </Grid>
               </CustomTabPanel>

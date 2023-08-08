@@ -28,7 +28,7 @@ const AppSidebar = ({ role }) => {
       }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
-        <img src={thinktown} style={{ width: '75%' }} />
+        <img src={thinktown} style={{ width: '75%' }}/>
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

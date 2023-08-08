@@ -36,7 +36,9 @@ const AppHeader = () => {
           by Fang
         </CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto">
-          <CNavItem>Fang's allergy lookup website</CNavItem>
+          <CNavItem>
+            Fang's allergy lookup website
+          </CNavItem>
         </CHeaderNav>
         <CHeaderNav>
           <CNavItem>

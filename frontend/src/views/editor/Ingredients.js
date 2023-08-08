@@ -1,5 +1,11 @@
 import * as React from 'react'
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from '@coreui/react'
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+} from '@coreui/react'
 export default function Ingredients() {
   return (
     <CRow>
@@ -8,7 +14,9 @@ export default function Ingredients() {
           <CCardHeader>
             <strong>Search Table</strong>
           </CCardHeader>
-          <CCardBody>body</CCardBody>
+          <CCardBody>
+            body
+          </CCardBody>
         </CCard>
       </CCol>
     </CRow>

@@ -51,7 +51,7 @@ var menu = {
       )
     }
     return nav
-  },
+  }
 }
 
 export default menu
