@@ -3,6 +3,7 @@ from flask import Blueprint, session, request
 from flask_cors import CORS, cross_origin
 import mysql.connector
 from enum import Enum
+from dotenv import load_dotenv
 
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
