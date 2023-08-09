@@ -7,19 +7,28 @@ import AsyncSelect from 'react-select/async';
 
 import api from 'src/api/api'
 
-import consts, { remapRowForDBCommit, remapRowForDisplay } from 'src/utils/consts'
+import consts from 'src/utils/consts'
 
-const roles = consts.Role
 const roleNames = consts.RoleName
+
+function remapRowForDisplay ({ id, role, email }) {
+  console.log(`${id}, ${role}, ${email}`)
+  console.log(roleNames)
+  return { id, role, roleName: `${roleNames[role]}`, email }
+}
+
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100 },
   { field: 'role', headerName: 'Role', width: 200, editable: true },
+  { field: 'roleName', headerName: 'Role Name', width: 200, editable: true },
   { field: 'email', headerName: 'Email', width: 200 },
 ]
 
 const remapDataForDisplay = (data) => {
-  return data.map((item) => remapRowForDisplay(item))
+  const newData= data.map((item) => remapRowForDisplay(item))
+  console.log(newData)
+  return newData
 }
 
 export function UserGrid() {
@@ -44,7 +53,7 @@ export function UserGrid() {
   }, [])
 
   function isLegalRole(role) {
-    return (Object.values(roles).includes(role)) ? true : false;
+    return (role in roleNames) ? true : false;
   }
 
   /**
@@ -85,7 +94,7 @@ export function UserGrid() {
     <>
       <DataGrid
         editMode='row'
-        rows={data}
+        rows={remapDataForDisplay(data)}
         columns={columns}
         initialState={{
           pagination: {

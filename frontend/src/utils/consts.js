@@ -5,19 +5,10 @@ const consts = {
     ADMIN: 2,
   },
   RoleName: {
-    USER: "USER",
-    EDITOR: "EDITOR",
-    ADMIN: "ADMIN"
+    0: "USER",
+    1: "EDITOR",
+    2: "ADMIN"
   }
 }
-
-export const remapRowForDBCommit = ({ id, role, email }) => {
-  return { id, role: roles[role], email }
-}
-
-export const remapRowForDisplay = ({ id, role, email }) => {
-  return { id, role: roleNames[role], email }
-}
-
 
 export default consts
