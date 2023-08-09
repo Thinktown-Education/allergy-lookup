@@ -92,17 +92,13 @@ export default function Permission() {
     return (role in consts.RoleName) ? true : false;
   }
 
-
-  const setModalInfo = (params) => {
-    setRowId(rowData.id)
-    setRowRole(rowData.role)
-    setRowRoleName(rowData.roleName)
-    setRowEmail(rowData.email)
-  }
-
-  const openEditModal = () => {
-    setModalInfo(rowData)
+  const openEditModal = (params, event) => {
     setModalTitle("Edit User Record")
+    setRowData(params.row)
+    setRowId(params.row.id)
+    setRowRole(params.row.role)
+    setRowRoleName(params.row.roleName)
+    setRowEmail(params.row.email)
     setVisible(true)
   }
 
@@ -169,11 +165,7 @@ export default function Permission() {
                 paginationModel: { page: 0, pageSize: 10 },
               },
             }}
-            onCellClick={(params, event) => {
-              setRowData(params.row)
-              setModalInfo(params.row)
-              openEditModal(params.row)
-            }}
+            onCellClick={openEditModal}
             processRowUpdate={(newRow, oldRow) => updateRowInDatabase(newRow, oldRow)}
             onProcessRowUpdateError={e => {
               console.log(e)
@@ -236,13 +228,9 @@ export default function Permission() {
           }}>
             Close
           </CButton>
-          <CButton color="primary" onClick={(() => save())}>Save changes</CButton>
+          <CButton color="primary" onClick={() => updateRowInDatabase({ ...rowData, role: rowRole })}>Save changes</CButton>
         </CModalFooter>
       </CModal>
     </>
-    // <CRow>
-    //   <CCol xs={12}>
-    //   </CCol>
-    // </CRow>
   )
 }
