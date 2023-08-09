@@ -189,63 +189,39 @@ export default function Permission() {
           <CModalTitle>{modalTitle}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <Grid container sx={{ py: 3 }}>
-            <Grid item xs={10}>
-              <CFormInput
-                placeholder="Search for User by Email"
-                aria-label="Search User"
-                onChange={(e) => searchFood(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
-              {loadingIcon()}
-            </Grid>
-            <Grid item xs={1} style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }} >
-              <Button variant="outlined" onClick={() => openAddModal()}> Add </Button>
-            </Grid>
-          </Grid>
           <CForm autoComplete='off'>
-            <CFormInput
+            {/* <CFormInput
               hidden
               value={rowId}
-            />
+            /> */}
             <Container sx={{ my: 2 }}>
               <CFormInput
                 label="ID"
                 value={rowId}
-                onInput={(e) => setFoodName(e.target.value)}
+                disabled
               />
             </Container>
             <Container sx={{ my: 2 }}>
               <CFormInput
                 label="Role"
                 value={rowRole}
-                onInput={(e) => setBrand(e.target.value)}
+                onInput={(e) => setRowRole(e.target.value)}
               />
             </Container>
             <Container sx={{ my: 2 }}>
               <CFormInput
                 label="Role Name"
                 value={rowRoleName}
-                onInput={(e) => setImageUrl(e.target.value)}
+                disabled
               />
             </Container>
             <Container sx={{ my: 2 }}>
               <CFormInput
                 label="Email"
                 value={rowEmail}
-                onInput={(e) => setImageUrl(e.target.value)}
+                disabled
               />
             </Container>
-            {/* <Container sx={{ my: 4 }}>
-                <AsyncSelect
-                  styles={"z-index: 2000"}
-                  cacheOptions
-                  isMulti
-                  value={list}
-                  loadOptions={loadOptions}
-                  onChange={searchIngredients} />
-              </Container> */}
           </CForm>
         </CModalBody>
         <CModalFooter>
