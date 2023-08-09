@@ -15,6 +15,10 @@ const food = {
 
   addFood(requestBody) {
     return http.post(`/addFood`, requestBody)
+  },
+
+  editFood(requestBody) {
+    return http.post(`/editFood`, requestBody)
   }
 }
 
