@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { debounce } from 'lodash'
 import { DataGrid } from '@mui/x-data-grid'
 import {
   CButton,
@@ -15,9 +16,13 @@ import {
   CCol,
   CCardHeader
 } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilCloudDownload } from '@coreui/icons'
 import api from 'src/api/api'
 import consts from 'src/utils/consts'
 import Container from '@mui/material/Container'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button';
 import AsyncSelect from 'react-select/async';
 
 const columns = [
@@ -40,7 +45,9 @@ export default function Permission() {
   const [rowUpdated, setRowUpdated] = React.useState(false)
   const [rowData, setRowData] = React.useState([])
   const [visible, setVisible] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
 
+  const [textInput, setTextInput] = React.useState("")
   const [list, setList] = React.useState([])
 
   // column record states
@@ -49,6 +56,17 @@ export default function Permission() {
   const [rowRoleName, setRowRoleName] = React.useState('')
   const [rowEmail, setRowEmail] = React.useState('')
   const [modalTitle, setModalTitle] = React.useState("")
+
+  const loadingIcon = () => {
+    if (loading) {
+      return <CIcon icon={cilCloudDownload} />
+    }
+  }
+
+  const searchUser = debounce((input) => {
+    setTextInput(input)
+    fetchTable(input)
+  }, 500)
 
   const fetchTable = (query) => {
     setLoading(true)
@@ -64,21 +82,23 @@ export default function Permission() {
     })
   }
 
-
   React.useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const response = await api.permission.getPermission()
-        if (response.data.code != 0) {
-          throw new Error('cannot fetch users from /permission')
-        }
-        setData(response.data.data)
-      }
-      catch (error) {
-        console.log(response.data.error)
-      }
+    if (textInput == "" && data.length == 0) {
+      fetchTable("")
     }
-    fetchUsers()
+    // async function fetchUsers() {
+    //   try {
+    //     const response = await api.permission.getPermission()
+    //     if (response.data.code != 0) {
+    //       throw new Error('cannot fetch users from /permission')
+    //     }
+    //     setData(response.data.data)
+    //   }
+    //   catch (error) {
+    //     console.log(response.data.error)
+    //   }
+    // }
+    // fetchUsers()
   }, [])
 
   function isLegalRole(role) {
@@ -171,6 +191,21 @@ export default function Permission() {
             <CModalTitle>{modalTitle}</CModalTitle>
           </CModalHeader>
           <CModalBody>
+            <Grid container sx={{ py: 3 }}>
+              <Grid item xs={10}>
+                <CFormInput
+                  placeholder="Search for User by Email"
+                  aria-label="Search User"
+                  onChange={(e) => searchFood(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
+                {loadingIcon()}
+              </Grid>
+              <Grid item xs={1} style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }} >
+                <Button variant="outlined" onClick={() => openAddModal()}> Add </Button>
+              </Grid>
+            </Grid>
             <CForm autoComplete='off'>
               <CFormInput
                 hidden
