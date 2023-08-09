@@ -1,6 +1,17 @@
 import * as React from 'react'
 import { DataGrid } from '@mui/x-data-grid'
-
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CFormInput,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CForm,
+} from '@coreui/react'
 import api from 'src/api/api'
 import consts from 'src/utils/consts'
 
@@ -23,6 +34,7 @@ export function UserGrid() {
   const [data, setData] = React.useState([])
   const [rowUpdated, setRowUpdated] = React.useState(false)
   const [rowData, setRowData] = React.useState([])
+  const [visisble, setVisible] = React.useState(false)
 
   React.useEffect(() => {
     async function fetchUsers() {
