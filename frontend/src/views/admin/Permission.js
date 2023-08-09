@@ -17,6 +17,8 @@ import {
 } from '@coreui/react'
 import api from 'src/api/api'
 import consts from 'src/utils/consts'
+import Container from '@mui/material/Container'
+import AsyncSelect from 'react-select/async';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100 },
@@ -37,7 +39,31 @@ export default function Permission() {
   const [data, setData] = React.useState([])
   const [rowUpdated, setRowUpdated] = React.useState(false)
   const [rowData, setRowData] = React.useState([])
-  const [visisble, setVisible] = React.useState(false)
+  const [visible, setVisible] = React.useState(false)
+
+  const [list, setList] = React.useState([])
+
+  // column record states
+  const [rowId, setRowId] = React.useState(0)
+  const [rowRole, setRowRole] = React.useState(0)
+  const [rowRoleName, setRowRoleName] = React.useState('')
+  const [rowEmail, setRowEmail] = React.useState('')
+  const [modalTitle, setModalTitle] = React.useState("")
+
+  const fetchTable = (query) => {
+    setLoading(true)
+    api.permission.findUserByEmail({
+      email: query
+    }).then((response) => {
+      setLoading(false)
+      if (response.data.code == 0) {
+        setData(response.data.data)
+      } else {
+        console.log(response.data.error)
+      }
+    })
+  }
+
 
   React.useEffect(() => {
     async function fetchUsers() {
@@ -57,6 +83,19 @@ export default function Permission() {
 
   function isLegalRole(role) {
     return (role in consts.RoleName) ? true : false;
+  }
+
+
+  const resetModal = () => {
+    setRowId(0)
+    setRowRole(0)
+    setRowEmail("")
+  }
+
+  const openAddModal = () => {
+    resetModal()
+    setModalTitle("Change Row Record")
+    setVisible(true)
   }
 
   /**
@@ -111,6 +150,7 @@ export default function Permission() {
                   paginationModel: { page: 0, pageSize: 10 },
                 },
               }}
+              onCellClick={() => openAddModal()}
               processRowUpdate={(newRow, oldRow) => updateRowInDatabase(newRow, oldRow)}
               onProcessRowUpdateError={e => {
                 console.log(e)
@@ -134,30 +174,37 @@ export default function Permission() {
             <CForm autoComplete='off'>
               <CFormInput
                 hidden
-                value={id}
+                value={rowId}
               />
               <Container sx={{ my: 2 }}>
                 <CFormInput
-                  label="Food name"
-                  value={foodName}
+                  label="ID"
+                  value={rowId}
                   onInput={(e) => setFoodName(e.target.value)}
                 />
               </Container>
               <Container sx={{ my: 2 }}>
                 <CFormInput
-                  label="Brand"
-                  value={brand}
+                  label="Role"
+                  value={rowRole}
                   onInput={(e) => setBrand(e.target.value)}
                 />
               </Container>
               <Container sx={{ my: 2 }}>
                 <CFormInput
-                  label="Image Url"
-                  value={imageUrl}
+                  label="Role Name"
+                  value={rowRoleName}
                   onInput={(e) => setImageUrl(e.target.value)}
                 />
               </Container>
-              <Container sx={{ my: 4 }}>
+              <Container sx={{ my: 2 }}>
+                <CFormInput
+                  label="Email"
+                  value={rowEmail}
+                  onInput={(e) => setImageUrl(e.target.value)}
+                />
+              </Container>
+              {/* <Container sx={{ my: 4 }}>
                 <AsyncSelect
                   styles={"z-index: 2000"}
                   cacheOptions
@@ -165,7 +212,7 @@ export default function Permission() {
                   value={list}
                   loadOptions={loadOptions}
                   onChange={searchIngredients} />
-              </Container>
+              </Container> */}
             </CForm>
           </CModalBody>
           <CModalFooter>

@@ -167,45 +167,6 @@ def findFoodByIngredients():
         "data": queryResult
     }
 
-@cross_origin()
-@main.route('/permission')
-def retrievePermission():
-    db = getConnector()
-    cursor = db.cursor(dictionary = True)
-    cursor.execute("""SELECT id, role, email FROM user""")
-    result = cursor.fetchall()
-
-    cursor.close()
-    db.close()
-    return {
-        "code": 0,
-        "error": "",
-        "data": result
-    }
-
-
-@cross_origin
-@main.route('/permission', methods = ['POST'])
-def updatePermission():
-    data = request.get_json(silent=True)
-    print(data)
-
-    success = {"code": 0, "error": "success"}
-    failure = {"code": 201, "error": "failure"}
-
-    db = getConnector()
-    cursor = db.cursor(dictionary=True)
-
-    newRole = data['role']
-    statement = """UPDATE user SET role = %s WHERE id = %s"""
-    cursor.execute(statement, [data['role'], data['id']])
-
-    db.commit()
-    cursor.close()
-    db.close()
-    return success
-
-
 @main.route('/addFood', methods = ['POST'])
 def addFood():
     data = request.get_json(silent=True)
@@ -255,6 +216,67 @@ def addFood():
         "code": 0,
         "error": "success"
     }
+
+@cross_origin()
+@main.route('/permission')
+def retrievePermission():
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("""SELECT id, role, email FROM user""")
+    result = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "",
+        "data": result
+    }
+
+
+@cross_origin
+@main.route('/permission', methods = ['POST'])
+def updatePermission():
+    data = request.get_json(silent=True)
+    print(data)
+
+    success = {"code": 0, "error": "success"}
+    failure = {"code": 201, "error": "failure"}
+
+    db = getConnector()
+    cursor = db.cursor(dictionary=True)
+
+    newRole = data['role']
+    statement = """UPDATE user SET role = %s WHERE id = %s"""
+    cursor.execute(statement, [data['role'], data['id']])
+
+    db.commit()
+    cursor.close()
+    db.close()
+    return success
+
+@main.route('/permission/findUserByEmail')
+def findUserByEmail():
+    email = request.args.get('email')
+    if email == None:
+        return {
+            "code": 1,
+            "error": "Invalid request"
+        }
+    
+    with closing(getConnector()) as db:
+        with closing(db.cursor(dictionary = True)) as cursor:
+            blurName = '%' + email + '%' # SQL中使用%符号进行模糊查询
+            cursor.execute("""
+                   SELECT * FROM user
+                   WHERE email LIKE %s""", [blurName])
+            result = cursor.fetchall()
+    return {
+        "code": 0,
+        "error": "",
+        "data": result
+    }
+
 
 """
 所有需要登陆状态的请求都必须经过session检查

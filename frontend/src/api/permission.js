@@ -6,6 +6,9 @@ const permission = {
   },
   updatePermission(requestBody) {
     return http.post(`/permission`, requestBody)
+  },
+  findUserByEmail(requestBody) {
+    return http.get(`/permission/findUserByEmail`, requestBody)
   }
 }
 
