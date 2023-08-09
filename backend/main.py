@@ -4,6 +4,7 @@ from flask_cors import CORS, cross_origin
 import mysql.connector
 from enum import Enum
 from dotenv import load_dotenv
+from contextlib import closing
 
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
@@ -217,16 +218,25 @@ def addFood():
         "error": "success"
     }
 
+
 @cross_origin()
 @main.route('/permission')
-def retrievePermission():
-    db = getConnector()
-    cursor = db.cursor(dictionary = True)
-    cursor.execute("""SELECT id, role, email FROM user""")
-    result = cursor.fetchall()
-
-    cursor.close()
-    db.close()
+def findUser():
+    print(request)
+    email = request.args.get('email')
+    if email == None:
+        return {
+            "code": 1,
+            "error": "Invalid request"
+        }
+    
+    with closing(getConnector()) as db:
+        with closing(db.cursor(dictionary = True)) as cursor:
+            emailSubstring = '%' + email + '%'
+            cursor.execute("""
+                   SELECT * FROM user
+                   WHERE email LIKE %s""", [emailSubstring])
+            result = cursor.fetchall()
     return {
         "code": 0,
         "error": "",
@@ -234,7 +244,8 @@ def retrievePermission():
     }
 
 
-@cross_origin
+
+@cross_origin()
 @main.route('/permission', methods = ['POST'])
 def updatePermission():
     data = request.get_json(silent=True)
@@ -254,29 +265,6 @@ def updatePermission():
     cursor.close()
     db.close()
     return success
-
-@main.route('/permission/findUserByEmail')
-def findUserByEmail():
-    email = request.args.get('email')
-    if email == None:
-        return {
-            "code": 1,
-            "error": "Invalid request"
-        }
-    
-    with closing(getConnector()) as db:
-        with closing(db.cursor(dictionary = True)) as cursor:
-            blurName = '%' + email + '%' # SQL中使用%符号进行模糊查询
-            cursor.execute("""
-                   SELECT * FROM user
-                   WHERE email LIKE %s""", [blurName])
-            result = cursor.fetchall()
-    return {
-        "code": 0,
-        "error": "",
-        "data": result
-    }
-
 
 """
 所有需要登陆状态的请求都必须经过session检查

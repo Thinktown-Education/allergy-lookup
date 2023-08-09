@@ -1,15 +1,15 @@
 import http from '../utils/http'
 
 const permission = {
-  getPermission() {
-    return http.get(`/permission`)
+  // getPermission() {
+  //   return http.get(`/permission`)
+  // },
+  findUser(requestBody) {
+    return http.get(`/permission`, { params: requestBody })
   },
   updatePermission(requestBody) {
     return http.post(`/permission`, requestBody)
   },
-  findUserByEmail(requestBody) {
-    return http.get(`/permission/findUserByEmail`, requestBody)
-  }
 }
 
 export default permission

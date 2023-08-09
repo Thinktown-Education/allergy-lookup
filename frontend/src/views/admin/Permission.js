@@ -70,7 +70,7 @@ export default function Permission() {
 
   const fetchTable = (query) => {
     setLoading(true)
-    api.permission.findUserByEmail({
+    api.permission.findUser({
       email: query
     }).then((response) => {
       setLoading(false)
@@ -86,19 +86,6 @@ export default function Permission() {
     if (textInput == "" && data.length == 0) {
       fetchTable("")
     }
-    // async function fetchUsers() {
-    //   try {
-    //     const response = await api.permission.getPermission()
-    //     if (response.data.code != 0) {
-    //       throw new Error('cannot fetch users from /permission')
-    //     }
-    //     setData(response.data.data)
-    //   }
-    //   catch (error) {
-    //     console.log(response.data.error)
-    //   }
-    // }
-    // fetchUsers()
   }, [])
 
   function isLegalRole(role) {
@@ -154,92 +141,103 @@ export default function Permission() {
   }
 
   return (
-    <CRow>
-      <CCol xs={12}>
-        <CCard className="mb-4">
-          <CCardHeader>
-            <strong>User Role Table</strong>
-          </CCardHeader>
-          <CCardBody>
-            <DataGrid
-              editMode='row'
-              rows={remapDataForDisplay(data)}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
-              }}
-              onCellClick={() => openAddModal()}
-              processRowUpdate={(newRow, oldRow) => updateRowInDatabase(newRow, oldRow)}
-              onProcessRowUpdateError={e => {
-                console.log(e)
-                /*
-                 * e.message == "rowModel is undefined".
-                 * No property exists for this TypeError in API doc.
-                 * https://mui.com/x/react-data-grid/row-definition/
-                 */
-              }}
-              pageSizeOptions={[10, 20, 50, { value: data.length, label: 'All' }]}
-            />
-          </CCardBody>
-        </CCard>
-
-        {/* Modal */}
-        <CModal backdrop="static" alignment="center" visible={visible} onClose={() => setVisible(false)}>
-          <CModalHeader onClose={() => setVisible(false)}>
-            <CModalTitle>{modalTitle}</CModalTitle>
-          </CModalHeader>
-          <CModalBody>
-            <Grid container sx={{ py: 3 }}>
-              <Grid item xs={10}>
-                <CFormInput
-                  placeholder="Search for User by Email"
-                  aria-label="Search User"
-                  onChange={(e) => searchFood(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
-                {loadingIcon()}
-              </Grid>
-              <Grid item xs={1} style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }} >
-                <Button variant="outlined" onClick={() => openAddModal()}> Add </Button>
-              </Grid>
-            </Grid>
-            <CForm autoComplete='off'>
+    <>
+      <CCard className="mb-4">
+        <CCardHeader>
+          <strong>User Role Table</strong>
+        </CCardHeader>
+        <CCardBody>
+          <Grid container sx={{ py: 3 }}>
+            <Grid item xs={12}>
               <CFormInput
-                hidden
-                value={rowId}
+                placeholder="Search User By Email"
+                aria-label="User Search"
+                onChange={(e) => searchUser(e.target.value)}
               />
-              <Container sx={{ my: 2 }}>
-                <CFormInput
-                  label="ID"
-                  value={rowId}
-                  onInput={(e) => setFoodName(e.target.value)}
-                />
-              </Container>
-              <Container sx={{ my: 2 }}>
-                <CFormInput
-                  label="Role"
-                  value={rowRole}
-                  onInput={(e) => setBrand(e.target.value)}
-                />
-              </Container>
-              <Container sx={{ my: 2 }}>
-                <CFormInput
-                  label="Role Name"
-                  value={rowRoleName}
-                  onInput={(e) => setImageUrl(e.target.value)}
-                />
-              </Container>
-              <Container sx={{ my: 2 }}>
-                <CFormInput
-                  label="Email"
-                  value={rowEmail}
-                  onInput={(e) => setImageUrl(e.target.value)}
-                />
-              </Container>
-              {/* <Container sx={{ my: 4 }}>
+            </Grid>
+            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
+              {loadingIcon()}
+            </Grid>
+          </Grid>
+          <DataGrid
+            editMode='row'
+            rows={remapDataForDisplay(data)}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 10 },
+              },
+            }}
+            onCellClick={() => openAddModal()}
+            processRowUpdate={(newRow, oldRow) => updateRowInDatabase(newRow, oldRow)}
+            onProcessRowUpdateError={e => {
+              console.log(e)
+              /*
+               * e.message == "rowModel is undefined".
+               * No property exists for this TypeError in API doc.
+               * https://mui.com/x/react-data-grid/row-definition/
+               */
+            }}
+            pageSizeOptions={[10, 20, 50, { value: data.length, label: 'All' }]}
+          />
+        </CCardBody>
+      </CCard>
+
+      {/* Modal */}
+      <CModal backdrop="static" alignment="center" visible={visible} onClose={() => setVisible(false)}>
+        <CModalHeader onClose={() => setVisible(false)}>
+          <CModalTitle>{modalTitle}</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <Grid container sx={{ py: 3 }}>
+            <Grid item xs={10}>
+              <CFormInput
+                placeholder="Search for User by Email"
+                aria-label="Search User"
+                onChange={(e) => searchFood(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
+              {loadingIcon()}
+            </Grid>
+            <Grid item xs={1} style={{ display: 'flex', justifyContent: 'end', alignItems: 'center' }} >
+              <Button variant="outlined" onClick={() => openAddModal()}> Add </Button>
+            </Grid>
+          </Grid>
+          <CForm autoComplete='off'>
+            <CFormInput
+              hidden
+              value={rowId}
+            />
+            <Container sx={{ my: 2 }}>
+              <CFormInput
+                label="ID"
+                value={rowId}
+                onInput={(e) => setFoodName(e.target.value)}
+              />
+            </Container>
+            <Container sx={{ my: 2 }}>
+              <CFormInput
+                label="Role"
+                value={rowRole}
+                onInput={(e) => setBrand(e.target.value)}
+              />
+            </Container>
+            <Container sx={{ my: 2 }}>
+              <CFormInput
+                label="Role Name"
+                value={rowRoleName}
+                onInput={(e) => setImageUrl(e.target.value)}
+              />
+            </Container>
+            <Container sx={{ my: 2 }}>
+              <CFormInput
+                label="Email"
+                value={rowEmail}
+                onInput={(e) => setImageUrl(e.target.value)}
+              />
+            </Container>
+            {/* <Container sx={{ my: 4 }}>
                 <AsyncSelect
                   styles={"z-index: 2000"}
                   cacheOptions
@@ -248,16 +246,19 @@ export default function Permission() {
                   loadOptions={loadOptions}
                   onChange={searchIngredients} />
               </Container> */}
-            </CForm>
-          </CModalBody>
-          <CModalFooter>
-            <CButton color="secondary" onClick={() => setAddVisible(false)}>
-              Close
-            </CButton>
-            <CButton color="primary" onClick={(() => save())}>Save changes</CButton>
-          </CModalFooter>
-        </CModal>
-      </CCol>
-    </CRow>
+          </CForm>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setAddVisible(false)}>
+            Close
+          </CButton>
+          <CButton color="primary" onClick={(() => save())}>Save changes</CButton>
+        </CModalFooter>
+      </CModal>
+    </>
+    // <CRow>
+    //   <CCol xs={12}>
+    //   </CCol>
+    // </CRow>
   )
 }
