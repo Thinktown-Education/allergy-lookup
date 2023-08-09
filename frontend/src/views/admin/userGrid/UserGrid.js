@@ -63,8 +63,6 @@ export function UserGrid() {
    * @param {*} oldRow 
    */
   async function updateRow(newRow, oldRow) {
-    console.log(newRow)
-    console.log(oldRow)
     /*
       check for legal role.
         - If legal, proceed.

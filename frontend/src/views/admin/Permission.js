@@ -8,10 +8,9 @@ export default function Permission() {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
-            <strong>Search Table</strong>
+            <strong>User Role Table</strong>
           </CCardHeader>
           <CCardBody>
-            <h1>placeholder body</h1>
             <UserGrid />
           </CCardBody>
         </CCard>
