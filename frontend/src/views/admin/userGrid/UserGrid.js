@@ -7,7 +7,7 @@ import AsyncSelect from 'react-select/async';
 
 import api from 'src/api/api'
 
-import consts from 'src/utils/consts'
+import consts, { remapRowForDBCommit, remapRowForDisplay } from 'src/utils/consts'
 
 const roles = consts.Role
 const roleNames = consts.RoleName
@@ -18,20 +18,14 @@ const columns = [
   { field: 'email', headerName: 'Email', width: 200 },
 ]
 
-const remapRowForDBCommit = ({ id, role, email }) => {
-  return { id, role: roles[role], email }
-}
-
-const remapRowForDisplay = ({ id, role, email }) => {
-  return { id, role: roleNames[role], email }
-}
-
 const remapDataForDisplay = (data) => {
   return data.map((item) => remapRowForDisplay(item))
 }
 
 export function UserGrid() {
   const [data, setData] = React.useState([])
+  const [rowUpdated, setRowUpdated] = React.useState(false)
+  const [rowData, setRowData] = React.useState([])
 
   React.useEffect(() => {
     async function fetchUsers() {
@@ -50,13 +44,8 @@ export function UserGrid() {
   }, [])
 
   function isLegalRole(role) {
-    return (role in roles) ? true : false;
+    return (Object.values(roles).includes(role)) ? true : false;
   }
-
-  /*
-   * TODO:
-   *  add function to handle illegal Role
-   */
 
   /**
    * Make `POST` request containing row record with updated role.
@@ -66,24 +55,29 @@ export function UserGrid() {
    */
   async function updateRow(newRow, oldRow) {
     console.log(newRow)
+    console.log(oldRow)
     /*
       check for legal role.
         - If legal, proceed.
         - If not legal, reset row data.
      */
-    const legalRole = isLegalRole(Number(newRow['role']))
-    if (legalRole) {
+    const isLegal = isLegalRole(Number(newRow['role']))
+    console.log('is legal role:', isLegal)
+    if (isLegal) {
+      setRowUpdated(true)
       const requestBody = { id: newRow['id'], role: newRow['role'] }
       try {
         const response = await api.permission.updatePermission(requestBody)
         if (response.data.code != 0) {
-          throw new Error('cannot fetch users from /permission')
+          throw new Error('cannot post new row record to /permission')
         }
       } catch (error) {
         console.log(error)
       }
     } else {
       console.log('Illegal role setting. Reverting row data.')
+      setRowUpdated(false)
+      setRowData(oldRow)
     }
   }
 

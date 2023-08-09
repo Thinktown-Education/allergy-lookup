@@ -192,23 +192,17 @@ def updatePermission():
 
     success = {"code": 0, "error": "success"}
     failure = {"code": 201, "error": "failure"}
-    # 
-    # PLACE HOLDER
-    #   update db with the new ROW record. Do not send back the entire data table.
-    #
 
-    # WIP code
-    # db = getConnector()
-    # cursor = db.cursor(dictionary=True)
+    db = getConnector()
+    cursor = db.cursor(dictionary=True)
 
-    # newRole = data['role']
-    # statement = """UPDATE user SET role(%s) WHERE id = %s"""
-    # cursor.execute(statement, [data['role'], data['id']])
+    newRole = data['role']
+    statement = """UPDATE user SET role = %s WHERE id = %s"""
+    cursor.execute(statement, [data['role'], data['id']])
 
-    # db.commit()
-    # cursor.close()
-    # db.close()
-    # WIP code
+    db.commit()
+    cursor.close()
+    db.close()
     return success
 
 
