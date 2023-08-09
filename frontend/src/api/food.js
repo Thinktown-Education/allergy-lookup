@@ -12,6 +12,10 @@ const food = {
   findFoodByIngredients(requestBody) {
     return http.post(`/findFoodByIngredients`, requestBody)
   },
+
+  addFood(requestBody) {
+    return http.post(`/addFood`, requestBody)
+  }
 }
 
 export default food
