@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { debounce } from 'lodash'
-import {
+import { 
+  CBadge,
   CButton,
   CCard,
   CCardBody,
@@ -28,9 +29,22 @@ const columns = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "food_name", headerName: "Name", width: 200 },
   { field: "brand", headerName: "Brand", width: 200 },
+  { 
+    field: "ingredients",
+    headerName: "Ingredients",
+    flex: 1,
+    renderCell: (params => {
+      return (
+      <>
+        {params.value.map((item, index) => 
+          (<CBadge color='success' shape='rounded-pill' key={index}>{item.ing_name}</CBadge>))}
+      </>
+      )
+    })
+  },
   { field: "modified",
     headerName: "Last Updated",
-    width: 400
+    width: 300
   },
 ];
 
@@ -38,14 +52,34 @@ export default function Food() {
   const [loading, setLoading] = React.useState(false)
   const [data, setData] = React.useState([])
   const [textInput, setTextInput] = React.useState("")
-  const [addVisible, setAddVisible] = React.useState(false)
-  const [editVisible, setEditVisible] = React.useState(false)
 
+  const [visible, setVisible] = React.useState(false)
+  const [modalTitle, setModalTitle] = React.useState("")
   const [id, setId] = React.useState(0)
   const [foodName, setFoodName] = React.useState("")
   const [brand, setBrand] = React.useState("")
   const [imageUrl, setImageUrl] = React.useState("")
   const [list, setList] = React.useState([])
+
+  const fetchTable = (query) => {
+    setLoading(true)
+    api.food.findFood({
+      name: query
+    }).then((response) => {
+      setLoading(false)
+      if (response.data.code == 0) {
+        setData(response.data.data)
+      } else {
+        console.log(response.data.error)
+      }
+    })
+  }
+
+  React.useEffect(() => {
+    if (textInput == "" && data.length == 0) {
+      fetchTable("")
+    }
+  })
 
   const searchFood = debounce((input) => {
     setTextInput(input)
@@ -80,15 +114,28 @@ export default function Food() {
   }, 500)
 
   const searchIngredients = (items) => {
-    setList(items.map(item => item.value))
+    setList(items)
   }
 
   const openAddModal = () => {
-    resetAddModal()
-    setAddVisible(true)
+    resetModal()
+    setModalTitle("Add new food")
+    setVisible(true)
   }
 
-  const resetAddModal = () => {
+  const openEditModal = (e) => {
+    var item = e.row
+    setModalTitle("Edit food")
+    setId(item.id)
+    setBrand(item.brand)
+    setFoodName(item.food_name)
+    setImageUrl("")
+    setList(item.ingredients.map(x => ({value: x.id, label: x.ing_name})))
+    setVisible(true)
+  }
+
+  const resetModal = () => {
+    setId(0)
     setFoodName("")
     setBrand("")
     setImageUrl("")
@@ -96,13 +143,14 @@ export default function Food() {
 
   const addFood = () => {
     api.food.addFood({
+      id: id,
       food_name: foodName,
       brand: brand,
       image_url: imageUrl,
-      ingredients: list
+      ingredients: list.map(x => x.value)
     }).then(response => {
       if (response.data.code == 0) {
-        setAddVisible(false)
+        setVisible(false)
         fetchTable(textInput)
       } else {
         console.log(response.data.error)
@@ -110,25 +158,30 @@ export default function Food() {
     })
   }
 
-  const fetchTable = (query) => {
-    setLoading(true)
-    api.food.findFood({
-      name: query
-    }).then((response) => {
-      setLoading(false)
+  const editFood = () => {
+    api.food.editFood({
+      id: id,
+      food_name: foodName,
+      brand: brand,
+      image_url: imageUrl,
+      ingredients: list.map(x => x.value)
+    }).then(response => {
       if (response.data.code == 0) {
-        setData(response.data.data)
+        setVisible(false)
+        fetchTable(textInput)
       } else {
         console.log(response.data.error)
       }
     })
   }
 
-  React.useEffect(() => {
-    if (textInput == "" && data.length == 0) {
-      fetchTable("")
+  const save = () => {
+    if (id == 0) {
+      addFood()
+    } else {
+      editFood()
     }
-  })
+  }
 
   return (
     <>
@@ -159,12 +212,13 @@ export default function Food() {
               }
             }}
             pageSizeOptions={[10, 20, 50, 100]}
+            onRowClick={openEditModal}
           />
         </CCardBody>
       </CCard>
-      <CModal backdrop="static" alignment="center" visible={addVisible} onClose={() => setAddVisible(false)}>
-        <CModalHeader onClose={() => setAddVisible(false)}>
-          <CModalTitle>Add new food</CModalTitle>
+      <CModal backdrop="static" alignment="center" visible={visible} onClose={() => setVisible(false)}>
+        <CModalHeader onClose={() => setVisible(false)}>
+          <CModalTitle>{modalTitle}</CModalTitle>
         </CModalHeader>
         <CModalBody>
         <CForm autoComplete='off'>
@@ -175,12 +229,14 @@ export default function Food() {
           <Container sx={{ my: 2 }}>
             <CFormInput
               label="Food name"
+              value={foodName}
               onInput={(e) => setFoodName(e.target.value)}
             />
           </Container>
           <Container sx={{ my: 2 }}>
             <CFormInput
               label="Brand"
+              value={brand}
               onInput={(e) => setBrand(e.target.value)}
             />
           </Container>
@@ -196,6 +252,7 @@ export default function Food() {
               styles={ "z-index: 2000" }
               cacheOptions 
               isMulti 
+              value={list}
               loadOptions={loadOptions} 
               onChange={searchIngredients}/>
           </Container>
@@ -205,7 +262,7 @@ export default function Food() {
           <CButton color="secondary" onClick={() => setAddVisible(false)}>
             Close
           </CButton>
-          <CButton color="primary" onClick={(() => addFood())}>Save changes</CButton>
+          <CButton color="primary" onClick={(() => save())}>Save changes</CButton>
         </CModalFooter>
       </CModal>
     </>

@@ -190,13 +190,6 @@ def addFood():
             "error": "Incorrect data format"
         }
     
-    if len(ingredientsId) == 0:
-        return {
-            "code": 0,
-            "error": "",
-            "data": []
-        }
-    
     inputList = [data['food_name'], data['food_name'], data['brand'], data['brand'], data['image_url']]
     db = getConnector()
     cursor = db.cursor(dictionary=True)
@@ -207,9 +200,53 @@ def addFood():
 
     foodId = cursor.lastrowid
     for ingId in ingredientsId:
-        print(f"""INSERT INTO food_ingredient (id_food, id_ing) VALUES ({foodId}, {ingId})""")
         cursor.execute(f"""INSERT INTO food_ingredient (id_food, id_ing) VALUES ({foodId}, {ingId})""")
     
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
+    }
+
+@cross_origin()
+@main.route('/editFood', methods = ['POST'])
+def editFood():
+    data = request.get_json(silent=True)
+    if data == None:
+        data = request.form
+
+    if "id" not in data \
+        or "food_name" not in data \
+        or "brand" not in data \
+        or "image_url" not in data \
+        or "ingredients" not in data:
+        return {
+            "code": 1,
+            "error": "Incorrect data format"
+        }
+        
+    ingredientsId = data["ingredients"]
+    if not isinstance(ingredientsId, list):
+        return {
+            "code": 1,
+            "error": "Incorrect data format"
+        }
+
+    inputList = [data['food_name'], data['food_name'], data['brand'], data['brand'], data['image_url'], data['id']]
+    db = getConnector()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("""
+    UPDATE food
+    SET food_name = %s, food_name_lower = LOWER(%s), brand = %s, brand_lower = LOWER(%s), image_url = %s
+    WHERE id = %s
+    """, inputList)
+
+    cursor.execute("DELETE FROM food_ingredient WHERE id_food = %s", [int(data['id'])])
+    for ingId in ingredientsId:
+        cursor.execute(f"""INSERT INTO food_ingredient (id_food, id_ing) VALUES ({data['id']}, {ingId})""")
+
     db.commit()
     cursor.close()
     db.close()
@@ -242,7 +279,6 @@ def findUser():
         "error": "",
         "data": result
     }
-
 
 
 @cross_origin()
