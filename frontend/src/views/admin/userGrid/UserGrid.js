@@ -1,22 +1,8 @@
 import * as React from 'react'
-import { debounce, set } from 'lodash'
-import { CCard, CFormInput, CCardBody, CCardHeader, CCol, CRow, CForm, CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter, CButton } from '@coreui/react'
-import { DataGrid, GridCellParams, GridCellModes, GridCellModesModel, GridRowsProp, GridColDef, GridCell, useGridApiRef } from '@mui/x-data-grid'
-import Container from '@mui/material/Container'
-import AsyncSelect from 'react-select/async';
+import { DataGrid } from '@mui/x-data-grid'
 
 import api from 'src/api/api'
-
 import consts from 'src/utils/consts'
-
-const roleNames = consts.RoleName
-
-function remapRowForDisplay ({ id, role, email }) {
-  console.log(`${id}, ${role}, ${email}`)
-  console.log(roleNames)
-  return { id, role, roleName: `${roleNames[role]}`, email }
-}
-
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100 },
@@ -25,10 +11,12 @@ const columns = [
   { field: 'email', headerName: 'Email', width: 200 },
 ]
 
+function remapRowForDisplay({ id, role, email }) {
+  return { id, role, roleName: `${consts.RoleName[role]}`, email }
+}
+
 const remapDataForDisplay = (data) => {
-  const newData= data.map((item) => remapRowForDisplay(item))
-  console.log(newData)
-  return newData
+  return data.map((item) => remapRowForDisplay(item))
 }
 
 export function UserGrid() {
@@ -53,16 +41,16 @@ export function UserGrid() {
   }, [])
 
   function isLegalRole(role) {
-    return (role in roleNames) ? true : false;
+    return (role in consts.RoleName) ? true : false;
   }
 
   /**
-   * Make `POST` request containing row record with updated role.
+   * Makes a `POST` request containing row record with updated role.
    * 
    * @param {*} newRow 
    * @param {*} oldRow 
    */
-  async function updateRow(newRow, oldRow) {
+  async function updateRowInDatabase(newRow, oldRow) {
     /*
       check for legal role.
         - If legal, proceed.
@@ -82,6 +70,9 @@ export function UserGrid() {
         console.log(error)
       }
     } else {
+      /*
+       * to be implemented.
+       */
       console.log('Illegal role setting. Reverting row data.')
       setRowUpdated(false)
       setRowData(oldRow)
@@ -99,8 +90,15 @@ export function UserGrid() {
             paginationModel: { page: 0, pageSize: 10 },
           },
         }}
-        processRowUpdate={(newRow, oldRow) => { updateRow(newRow, oldRow) }}
-        onProcessRowUpdateError={e => console.log(e.message)}
+        processRowUpdate={(newRow, oldRow) => updateRowInDatabase(newRow, oldRow)}
+        onProcessRowUpdateError={e => {
+          console.log(e)
+          /*
+           * e.message == "rowModel is undefined".
+           * No property exists for this TypeError in API doc.
+           * https://mui.com/x/react-data-grid/row-definition/
+           */
+        }}
         pageSizeOptions={[10, 20, 50, { value: data.length, label: 'All' }]}
       />
     </>
