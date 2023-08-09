@@ -169,10 +169,10 @@ def findFoodByIngredients():
 
 @cross_origin()
 @main.route('/permission')
-def getPermission():
+def retrievePermission():
     db = getConnector()
     cursor = db.cursor(dictionary = True)
-    cursor.execute("""SELECT * FROM user""")
+    cursor.execute("""SELECT id, role, email FROM user""")
     result = cursor.fetchall()
 
     cursor.close()
@@ -182,6 +182,35 @@ def getPermission():
         "error": "",
         "data": result
     }
+
+
+@cross_origin
+@main.route('/permission', methods = ['POST'])
+def updatePermission():
+    data = request.get_json(silent=True)
+    print(data)
+
+    success = {"code": 0, "error": "success"}
+    failure = {"code": 201, "error": "failure"}
+    # 
+    # PLACE HOLDER
+    #   update db with the new ROW record. Do not send back the entire data table.
+    #
+
+    # WIP code
+    # db = getConnector()
+    # cursor = db.cursor(dictionary=True)
+
+    # newRole = data['role']
+    # statement = """UPDATE user SET role(%s) WHERE id = %s"""
+    # cursor.execute(statement, [data['role'], data['id']])
+
+    # db.commit()
+    # cursor.close()
+    # db.close()
+    # WIP code
+    return success
+
 
 @main.route('/addFood', methods = ['POST'])
 def addFood():

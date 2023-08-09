@@ -1,9 +1,12 @@
 import http from '../utils/http'
 
 const permission = {
-  getPermission(requestBody) {
-    return http.get(`/permission`, { params: requestBody })
+  getPermission() {
+    return http.get(`/permission`)
   },
+  updatePermission(requestBody) {
+    return http.post(`/permission`, requestBody)
+  }
 }
 
 export default permission
