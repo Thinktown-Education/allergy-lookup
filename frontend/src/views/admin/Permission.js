@@ -12,8 +12,6 @@ import {
   CModalHeader,
   CModalTitle,
   CForm,
-  CRow,
-  CCol,
   CCardHeader
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -22,8 +20,6 @@ import api from 'src/api/api'
 import consts from 'src/utils/consts'
 import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button';
-import AsyncSelect from 'react-select/async';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100 },
@@ -36,19 +32,27 @@ function remapRowForDisplay({ id, role, email }) {
   return { id, role, roleName: `${consts.RoleName[role]}`, email }
 }
 
-const remapDataForDisplay = (data) => {
+function remapDataForDisplay(data) {
   return data.map((item) => remapRowForDisplay(item))
 }
 
+function updateTable(table, row) {
+  return table.map((item) => {
+    if (item.id == row.id) {
+      return { ...item, role: row.role }
+    }
+    return item
+  })
+}
+
 export default function Permission() {
-  const [data, setData] = React.useState([])
+  const [table, setTable] = React.useState([])
   const [rowUpdated, setRowUpdated] = React.useState(false)
   const [rowData, setRowData] = React.useState([])
   const [visible, setVisible] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
 
   const [textInput, setTextInput] = React.useState("")
-  const [list, setList] = React.useState([])
 
   // column record states
   const [rowId, setRowId] = React.useState(0)
@@ -75,7 +79,7 @@ export default function Permission() {
     }).then((response) => {
       setLoading(false)
       if (response.data.code == 0) {
-        setData(response.data.data)
+        setTable(response.data.data)
       } else {
         console.log(response.data.error)
       }
@@ -83,7 +87,7 @@ export default function Permission() {
   }
 
   React.useEffect(() => {
-    if (textInput == "" && data.length == 0) {
+    if (textInput == "" && table.length == 0) {
       fetchTable("")
     }
   }, [])
@@ -158,7 +162,7 @@ export default function Permission() {
           </Grid>
           <DataGrid
             editMode='row'
-            rows={remapDataForDisplay(data)}
+            rows={remapDataForDisplay(table)}
             columns={columns}
             initialState={{
               pagination: {
@@ -171,11 +175,11 @@ export default function Permission() {
               console.log(e)
               /*
                * e.message == "rowModel is undefined".
-               * No property exists for this TypeError in API doc.
+               * rowModel is not found in API doc for this component.
                * https://mui.com/x/react-data-grid/row-definition/
                */
             }}
-            pageSizeOptions={[10, 20, 50, { value: data.length, label: 'All' }]}
+            pageSizeOptions={[10, 20, 50, { value: table.length, label: 'All' }]}
           />
         </CCardBody>
       </CCard>
@@ -187,10 +191,6 @@ export default function Permission() {
         </CModalHeader>
         <CModalBody>
           <CForm autoComplete='off'>
-            {/* <CFormInput
-              hidden
-              value={rowId}
-            /> */}
             <Container sx={{ my: 2 }}>
               <CFormInput
                 label="ID"
@@ -228,7 +228,13 @@ export default function Permission() {
           }}>
             Close
           </CButton>
-          <CButton color="primary" onClick={() => updateRowInDatabase({ ...rowData, role: rowRole })}>Save changes</CButton>
+          <CButton color="primary" onClick={() => {
+            const newRow = { ...rowData, role: rowRole }
+            const newTable = updateTable(table, newRow)
+            // setTable(newTable)
+            updateRowInDatabase(newRow, rowData)
+            // fetchTable("")
+          }}>Save changes</CButton>
         </CModalFooter>
       </CModal>
     </>
