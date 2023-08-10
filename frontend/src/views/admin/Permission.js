@@ -186,8 +186,8 @@ export default function Permission() {
       </CCard>
 
       {/* Modal */}
-      <CModal backdrop="static" alignment="center" visible={visible} onClose={setVisible}>
-        <CModalHeader onClose={setVisible}>
+      <CModal backdrop="static" alignment="center" visible={visible} onClose={() => setVisible(false)}>
+        <CModalHeader onClose={() => setVisible(false)}>
           <CModalTitle>{modalTitle}</CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -211,7 +211,7 @@ export default function Permission() {
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={setVisible}>
+          <CButton color="secondary" onClick={() => setVisible(false)}>
             Close
           </CButton>
           <CButton color="primary" onClick={save}>
