@@ -103,7 +103,7 @@ http.interceptors.response.use(
       // } else {
       //     return Promise.reject(error);
       // }
-      window.location.href = '/500'
+      console.log(error)
       return Promise.reject(error)
     }
   },

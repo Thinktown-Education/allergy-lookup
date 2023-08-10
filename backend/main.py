@@ -2,7 +2,7 @@
 from flask import Blueprint, session, request
 from flask_cors import CORS, cross_origin
 import mysql.connector
-from enum import Enum
+from enum import IntEnum
 
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
@@ -167,6 +167,12 @@ def findFoodByIngredients():
 @cross_origin()
 @main.route('/addFood', methods = ['POST'])
 def addFood():
+    if user['role'] < int(Role.EDITOR):
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+    
     data = request.get_json(silent=True)
     if data == None:
         data = request.form
@@ -210,6 +216,12 @@ def addFood():
 @cross_origin()
 @main.route('/editFood', methods = ['POST'])
 def editFood():
+    if user['role'] < Role.EDITOR:
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+    
     data = request.get_json(silent=True)
     if data == None:
         data = request.form
@@ -251,6 +263,29 @@ def editFood():
         "code": 0,
         "error": "success"
     }
+
+@cross_origin()
+@main.route('/deleteFood/<id_food>', methods = ['GET'])
+def deleteFood(id_food):
+    if user['role'] < int(Role.EDITOR):
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+
+    id_food = int(id_food)
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("DELETE FROM food WHERE id = %s", [id_food])
+    cursor.execute("DELETE FROM food_ingredient WHERE id_food = %s", [id_food])
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
+    }
+
 """
 所有需要登陆状态的请求都必须经过session检查
 """
@@ -279,7 +314,7 @@ def check_session():
     global user
     user = result
 
-class Role(Enum):
+class Role(IntEnum):
     USER = 0
     EDITOR = 1
     ADMIN = 2

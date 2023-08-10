@@ -19,6 +19,10 @@ const food = {
 
   editFood(requestBody) {
     return http.post(`/editFood`, requestBody)
+  },
+
+  deleteFood(id) {
+    return http.get(`/deleteFood/${id}`)
   }
 }
 

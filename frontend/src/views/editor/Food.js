@@ -54,6 +54,7 @@ export default function Food() {
   const [textInput, setTextInput] = React.useState("")
 
   const [visible, setVisible] = React.useState(false)
+  const [deleteVisible, setDeleteVisible] = React.useState(false)
   const [modalTitle, setModalTitle] = React.useState("")
   const [id, setId] = React.useState(0)
   const [foodName, setFoodName] = React.useState("")
@@ -124,6 +125,7 @@ export default function Food() {
   }
 
   const openEditModal = (e) => {
+    resetModal()
     var item = e.row
     setModalTitle("Edit food")
     setId(item.id)
@@ -139,6 +141,7 @@ export default function Food() {
     setFoodName("")
     setBrand("")
     setImageUrl("")
+    setList([])
   }
 
   const addFood = () => {
@@ -151,6 +154,7 @@ export default function Food() {
     }).then(response => {
       if (response.data.code == 0) {
         setVisible(false)
+        resetModal()
         fetchTable(textInput)
       } else {
         console.log(response.data.error)
@@ -168,6 +172,7 @@ export default function Food() {
     }).then(response => {
       if (response.data.code == 0) {
         setVisible(false)
+        resetModal()
         fetchTable(textInput)
       } else {
         console.log(response.data.error)
@@ -181,6 +186,19 @@ export default function Food() {
     } else {
       editFood()
     }
+  }
+
+  const deleteFood = () => {
+    api.food.deleteFood(id).then(response => {
+      if (response.data.code == 0) {
+        setVisible(false)
+        setDeleteVisible(false)
+        resetModal()
+        fetchTable(textInput)
+      } else {
+        console.log(response.data.error)
+      }
+    })
   }
 
   return (
@@ -215,7 +233,7 @@ export default function Food() {
           />
         </CCardBody>
       </CCard>
-      <CModal backdrop="static" alignment="center" visible={visible} onClose={() => setVisible(false)}>
+      <CModal backdrop="static" size="lg" alignment="center" visible={visible} onClose={() => setVisible(false)}>
         <CModalHeader onClose={() => setVisible(false)}>
           <CModalTitle>{modalTitle}</CModalTitle>
         </CModalHeader>
@@ -257,12 +275,25 @@ export default function Food() {
           </Container>
         </CForm>
         </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setAddVisible(false)}>
-            Close
-          </CButton>
-          <CButton color="primary" onClick={(() => save())}>Save changes</CButton>
+        <CModalFooter className='justify-content-between'>
+          <CButton style={id == 0? {visibility: 'hidden'} : {}} color="danger" variant="outline" onClick={() => setDeleteVisible(true)}> Delete </CButton>
+          <p>
+            <CButton color="secondary" onClick={() => setVisible(false)}>
+              Close
+            </CButton>
+            <CButton color="primary" onClick={(() => save())}>Save changes</CButton>
+          </p>
         </CModalFooter>
+        <CModal alignment="center" visible={deleteVisible} onClose={() => setDeleteVisible(false)}>
+          <CModalHeader>Delete food</CModalHeader>
+          <CModalBody>Are you sure you want to delete <b>{foodName}</b>?</CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" onClick={() => setDeleteVisible(false)}>
+              No
+            </CButton>
+            <CButton color="primary" onClick={(() => deleteFood())}>Yes</CButton>
+          </CModalFooter>
+        </CModal>
       </CModal>
     </>
   )
