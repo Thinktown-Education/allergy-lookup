@@ -141,6 +141,13 @@ export default function Permission() {
     }
   }
 
+  const save = () => {
+    const newRow = { ...rowData, role: rowRole }
+    const newTable = updateTable(table, newRow)
+    setTable(newTable)
+    updateRowInDatabase(newRow, rowData)
+  }
+
   return (
     <>
       <CCard className="mb-4">
@@ -228,13 +235,8 @@ export default function Permission() {
           }}>
             Close
           </CButton>
-          <CButton color="primary" onClick={() => {
-            const newRow = { ...rowData, role: rowRole }
-            const newTable = updateTable(table, newRow)
-            // setTable(newTable)
-            updateRowInDatabase(newRow, rowData)
-            // fetchTable("")
-          }}>Save changes</CButton>
+          <CButton color="primary" onClick={save}
+          >Save changes</CButton>
         </CModalFooter>
       </CModal>
     </>
