@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { debounce } from 'lodash'
+import { debounce, update } from 'lodash'
 import { DataGrid } from '@mui/x-data-grid'
 import {
   CButton,
@@ -12,7 +12,7 @@ import {
   CModalHeader,
   CModalTitle,
   CForm,
-  CCardHeader
+  CCardHeader,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilCloudDownload } from '@coreui/icons'
@@ -38,10 +38,7 @@ function remapDataForDisplay(data) {
 
 function updateTable(table, row) {
   return table.map((item) => {
-    if (item.id == row.id) {
-      return { ...item, role: row.role }
-    }
-    return item
+    return item.id != row.id ? item : { ...item, role: row.role }
   })
 }
 
@@ -52,14 +49,14 @@ export default function Permission() {
   const [visible, setVisible] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
 
-  const [textInput, setTextInput] = React.useState("")
+  const [textInput, setTextInput] = React.useState('')
 
   // column record states
   const [rowId, setRowId] = React.useState(0)
   const [rowRole, setRowRole] = React.useState(0)
   const [rowRoleName, setRowRoleName] = React.useState('')
   const [rowEmail, setRowEmail] = React.useState('')
-  const [modalTitle, setModalTitle] = React.useState("")
+  const [modalTitle, setModalTitle] = React.useState('')
 
   const loadingIcon = () => {
     if (loading) {
@@ -72,32 +69,31 @@ export default function Permission() {
     fetchTable(input)
   }, 500)
 
-  const fetchTable = (query) => {
+  const fetchTable = async (query) => {
     setLoading(true)
-    api.permission.findUser({
-      email: query
-    }).then((response) => {
-      setLoading(false)
-      if (response.data.code == 0) {
-        setTable(response.data.data)
-      } else {
-        console.log(response.data.error)
-      }
+    const response = await api.permission.findUser({
+      email: query,
     })
+    setLoading(false)
+    if (response.data.code == 0) {
+      setTable(response.data.data)
+    } else {
+      console.log(response.data.error)
+    }
   }
 
   React.useEffect(() => {
-    if (textInput == "" && table.length == 0) {
-      fetchTable("")
+    if (textInput == '' && table.length == 0) {
+      fetchTable('')
     }
   }, [])
 
   function isLegalRole(role) {
-    return (role in consts.RoleName) ? true : false;
+    return role in consts.RoleName ? true : false
   }
 
   const openEditModal = (params, event) => {
-    setModalTitle("Edit User Record")
+    setModalTitle('Edit User Record')
     setRowData(params.row)
     setRowId(params.row.id)
     setRowRole(params.row.role)
@@ -108,9 +104,9 @@ export default function Permission() {
 
   /**
    * Makes a `POST` request containing row record with updated role.
-   * 
-   * @param {*} newRow 
-   * @param {*} oldRow 
+   *
+   * @param {*} newRow
+   * @param {*} oldRow
    */
   async function updateRowInDatabase(newRow, oldRow) {
     /*
@@ -121,7 +117,6 @@ export default function Permission() {
     const isLegal = isLegalRole(Number(newRow['role']))
     console.log('is legal role:', isLegal)
     if (isLegal) {
-      setRowUpdated(true)
       const requestBody = { id: newRow['id'], role: newRow['role'] }
       try {
         const response = await api.permission.updatePermission(requestBody)
@@ -133,11 +128,10 @@ export default function Permission() {
       }
     } else {
       /*
-       * to be implemented.
+       * TODO: replace alert with an UI popup.
        */
-      console.log('Illegal role setting. Reverting row data.')
-      setRowUpdated(false)
-      setRowData(oldRow)
+      alert('Illegal role value. Reverting row data.')
+      setTable(updateTable(table, oldRow))
     }
   }
 
@@ -163,12 +157,12 @@ export default function Permission() {
                 onChange={(e) => searchUser(e.target.value)}
               />
             </Grid>
-            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }} >
+            <Grid item xs={1} style={{ display: 'flex', alignItems: 'center' }}>
               {loadingIcon()}
             </Grid>
           </Grid>
           <DataGrid
-            editMode='row'
+            editMode="row"
             rows={remapDataForDisplay(table)}
             columns={columns}
             initialState={{
@@ -178,7 +172,7 @@ export default function Permission() {
             }}
             onCellClick={openEditModal}
             processRowUpdate={(newRow, oldRow) => updateRowInDatabase(newRow, oldRow)}
-            onProcessRowUpdateError={e => {
+            onProcessRowUpdateError={(e) => {
               console.log(e)
               /*
                * e.message == "rowModel is undefined".
@@ -192,18 +186,14 @@ export default function Permission() {
       </CCard>
 
       {/* Modal */}
-      <CModal backdrop="static" alignment="center" visible={visible} onClose={() => setVisible(false)}>
-        <CModalHeader onClose={() => setVisible(false)}>
+      <CModal backdrop="static" alignment="center" visible={visible} onClose={setVisible}>
+        <CModalHeader onClose={setVisible}>
           <CModalTitle>{modalTitle}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          <CForm autoComplete='off'>
+          <CForm autoComplete="off">
             <Container sx={{ my: 2 }}>
-              <CFormInput
-                label="ID"
-                value={rowId}
-                disabled
-              />
+              <CFormInput label="ID" value={rowId} disabled />
             </Container>
             <Container sx={{ my: 2 }}>
               <CFormInput
@@ -213,30 +203,20 @@ export default function Permission() {
               />
             </Container>
             <Container sx={{ my: 2 }}>
-              <CFormInput
-                label="Role Name"
-                value={rowRoleName}
-                disabled
-              />
+              <CFormInput label="Role Name" value={rowRoleName} disabled />
             </Container>
             <Container sx={{ my: 2 }}>
-              <CFormInput
-                label="Email"
-                value={rowEmail}
-                disabled
-              />
+              <CFormInput label="Email" value={rowEmail} disabled />
             </Container>
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => {
-            setVisible(false)
-            setModalInfo(rowData)
-          }}>
+          <CButton color="secondary" onClick={setVisible}>
             Close
           </CButton>
-          <CButton color="primary" onClick={save}
-          >Save changes</CButton>
+          <CButton color="primary" onClick={save}>
+            Save changes
+          </CButton>
         </CModalFooter>
       </CModal>
     </>
