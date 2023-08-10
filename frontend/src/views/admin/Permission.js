@@ -47,6 +47,7 @@ export default function Permission() {
   const [rowUpdated, setRowUpdated] = React.useState(false)
   const [rowData, setRowData] = React.useState([])
   const [visible, setVisible] = React.useState(false)
+  const [errorVisible, setErrorVisible] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
 
   const [textInput, setTextInput] = React.useState('')
@@ -100,6 +101,10 @@ export default function Permission() {
     setRowRoleName(params.row.roleName)
     setRowEmail(params.row.email)
     setVisible(true)
+  }
+
+  const openErrorModal = () => {
+    setErrorVisible(true)
   }
 
   /**
@@ -199,7 +204,13 @@ export default function Permission() {
               <CFormInput
                 label="Role"
                 value={rowRole}
-                onInput={(e) => setRowRole(e.target.value)}
+                onInput={(e) => {
+                  if (isLegalRole(e.target.value)) {
+                    setRowRole(e.target.value)
+                  } else {
+                    openErrorModal()
+                  }
+                }}
               />
             </Container>
             <Container sx={{ my: 2 }}>
@@ -216,6 +227,22 @@ export default function Permission() {
           </CButton>
           <CButton color="primary" onClick={save}>
             Save changes
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      {/* Modal */}
+      <CModal backdrop="static" alignment="center" visible={errorVisible} onClose={() => setErrorVisible(false)}>
+        <CModalHeader onClose={() => setErrorVisible(false)}>
+        </CModalHeader>
+        <CModalBody>
+          <Container sx={{ my: 2 }}>
+            Incorrect Role Value. Please enter a valid role value.
+          </Container>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setErrorVisible(false)}>
+            Close
           </CButton>
         </CModalFooter>
       </CModal>
