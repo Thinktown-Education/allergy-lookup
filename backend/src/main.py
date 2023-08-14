@@ -3,14 +3,19 @@ from flask import Blueprint, session, request
 from flask_cors import CORS, cross_origin
 import mysql.connector
 from enum import IntEnum
+import os
 
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
 user = None
 
 def getConnector():
+    hostname = "db"
+    if os.getenv("FLASK_DEBUG"):
+        hostname = "localhost"
+
     db = mysql.connector.connect(
-        host="db",
+        host=hostname,
         user="root",
         password="admin",
         database="allergy"
@@ -18,7 +23,7 @@ def getConnector():
     return db
 
 @cross_origin()
-@main.route("/heartbeat")
+@main.route("/api/heartbeat")
 def heartbeat():
     return {
         "code": 0,
@@ -26,11 +31,12 @@ def heartbeat():
         "data": {
             "email": user['email'],
             "role": user['role']
-        }
+        },
+        "env": os.getenv('FLASK_DEBUG')
     }
 
 @cross_origin()
-@main.route('/findFood')
+@main.route('/api/findFood')
 def findFood():
     name = request.args.get('name')
     if name == None:
@@ -65,7 +71,7 @@ def findFood():
     }
 
 @cross_origin()
-@main.route('/findIngredients')
+@main.route('/api/findIngredients')
 def findIngredients():
     name = request.args.get('name')
     if name == None:
@@ -91,7 +97,7 @@ def findIngredients():
     }
 
 @cross_origin()
-@main.route('/findFoodByIngredients', methods = ['POST'])
+@main.route('/api/findFoodByIngredients', methods = ['POST'])
 def findFoodByIngredients():
     data = request.get_json(silent=True)
     if data == None:
@@ -166,7 +172,7 @@ def findFoodByIngredients():
     }
 
 @cross_origin()
-@main.route('/addFood', methods = ['POST'])
+@main.route('/api/addFood', methods = ['POST'])
 def addFood():
     if user['role'] < int(Role.EDITOR):
         return {
@@ -215,7 +221,7 @@ def addFood():
     }
 
 @cross_origin()
-@main.route('/editFood', methods = ['POST'])
+@main.route('/api/editFood', methods = ['POST'])
 def editFood():
     if user['role'] < Role.EDITOR:
         return {
@@ -266,7 +272,7 @@ def editFood():
     }
 
 @cross_origin()
-@main.route('/deleteFood/<id_food>', methods = ['GET'])
+@main.route('/api/deleteFood/<id_food>', methods = ['GET'])
 def deleteFood(id_food):
     if user['role'] < int(Role.EDITOR):
         return {
@@ -288,7 +294,7 @@ def deleteFood(id_food):
     }
 
 @cross_origin()
-@main.route('/addIngredient', methods = ['POST'])
+@main.route('/api/addIngredient', methods = ['POST'])
 def addIngredient():
     if user['role'] < int(Role.EDITOR):
         return {
@@ -319,7 +325,7 @@ def addIngredient():
     }
 
 @cross_origin()
-@main.route('/editIngredient', methods = ['POST'])
+@main.route('/api/editIngredient', methods = ['POST'])
 def editIngredient():
     if user['role'] < int(Role.EDITOR):
         return {
@@ -352,7 +358,7 @@ def editIngredient():
     }
     
 @cross_origin()
-@main.route('/deleteIngredient/<id_ing>', methods = ['GET'])
+@main.route('/api/deleteIngredient/<id_ing>', methods = ['GET'])
 def deleteIngredient(id_ing):
     if user['role'] < int(Role.EDITOR):
         return {
@@ -374,7 +380,7 @@ def deleteIngredient(id_ing):
     }
 
 @cross_origin()
-@main.route('/findUser')
+@main.route('/api/findUser')
 def findUser():
     if user['role'] < Role.ADMIN:
         return {
@@ -407,7 +413,7 @@ def findUser():
     }
 
 @cross_origin()
-@main.route('/updateUser', methods = ['POST'])
+@main.route('/api/updateUser', methods = ['POST'])
 def updateUser():
     if user['role'] < Role.ADMIN:
         return {

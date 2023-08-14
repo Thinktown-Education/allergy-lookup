@@ -29,7 +29,7 @@ const errorHandle = (status) => {
   switch (status) {
     // 401: 未登录状态，跳转登录页
     case 401:
-      window.location.href = '/login'
+      window.location.href = '/#/login'
       // toLogin();
       break
     // 403 token过期

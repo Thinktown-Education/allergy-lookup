@@ -2,7 +2,7 @@ var common = {
   // env
   env: process.env.NODE_ENV,
   // base url
-  base_url: 'http://localhost:5000',
+  base_url: process.env.NODE_ENV == "production" ? "http://localhost:5000/api" : "http://localhost:5000/api",
   /**
    * Common method for checking empty objeect
    * @param {*} value

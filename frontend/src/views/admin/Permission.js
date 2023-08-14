@@ -42,6 +42,7 @@ const columns = [
 ];
 
 export default function Permission() {
+  console.log(process.env.NODE_ENV)
   const [loading, setLoading] = React.useState(false)
   const [data, setData] = React.useState([])
   const [textInput, setTextInput] = React.useState("")

@@ -3,13 +3,18 @@ from flask import Blueprint, request, session
 from flask_cors import CORS, cross_origin
 import mysql.connector
 import hashlib
+import os
 
 auth = Blueprint('auth', __name__)
 cors = CORS(auth, supports_credentials=True)
 
 def getConnector():
+    hostname = "db"
+    if os.getenv("FLASK_DEBUG"):
+        hostname = "localhost"
+
     db = mysql.connector.connect(
-        host="db",
+        host=hostname,
         user="root",
         password="admin",
         database="allergy"
@@ -17,7 +22,7 @@ def getConnector():
     return db
 
 @cross_origin()
-@auth.route("/login", methods=['POST'])
+@auth.route("/api/login", methods=['POST'])
 def login():
     data = request.get_json(silent=True)
     if data == None:
@@ -52,7 +57,7 @@ def login():
     }
 
 @cross_origin()
-@auth.route("/register", methods=['POST'])
+@auth.route("/api/register", methods=['POST'])
 def register():
     data = request.get_json(silent=True)
     if data == None:
@@ -90,7 +95,7 @@ def register():
     }
 
 @cross_origin()
-@auth.route("/logout")
+@auth.route("/api/logout")
 def logout():
     if "user" in session:
         session.clear()

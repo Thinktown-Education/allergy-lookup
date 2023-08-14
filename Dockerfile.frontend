@@ -1,0 +1,8 @@
+FROM nginx:stable-alpine
+WORKDIR /app
+
+COPY ./frontend /app
+
+RUN apk update && apk add nodejs npm
+RUN npm install
+RUN npm run build
