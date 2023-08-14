@@ -15,7 +15,7 @@ var common = {
   },
 
   getRole: function () {
-    return sessionStorage.getItem('role')
+    return localStorage.getItem('role')
   },
 
   getRoleName: function (value) {

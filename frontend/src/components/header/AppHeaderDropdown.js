@@ -15,8 +15,8 @@ import api from 'src/api/api'
 import common from 'src/utils/common'
 
 const AppHeaderDropdown = () => {
-  const displayEmail = sessionStorage.getItem('email')
-  const roleName = common.getRoleName(sessionStorage.getItem('role'))
+  const displayEmail = localStorage.getItem('email')
+  const roleName = common.getRoleName(localStorage.getItem('role'))
 
   const logout = async (e) => {
     e.preventDefault()

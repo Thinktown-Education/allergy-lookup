@@ -468,8 +468,9 @@ def check_session():
     
     if "user" not in session:
         return {
+            "code": 1,
             "error": "not signed in"
-        }, 401
+        }
     db = getConnector()
     cursor = db.cursor(dictionary = True)
     sql = "SELECT * FROM user where id = %s"
@@ -480,8 +481,9 @@ def check_session():
     db.close()
     if not result:
         return {
+            "code": 1,
             "error": "not signed in"
-        }, 401
+        }
     global user
     user = result
 

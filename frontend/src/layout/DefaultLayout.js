@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
+import { useNavigate } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import api from 'src/api/api'
 import menu from '../menu'
@@ -8,12 +9,17 @@ import nav from '../_nav'
 const DefaultLayout = ({ token }) => {
   const [navigation, setNavigation] = useState([])
   const [role, setRole] = useState(0)
+  const navigate = useNavigate()
 
   useEffect(() => {
     api.auth.heartbeat().then((response) => {
-      sessionStorage.setItem('email', response.data.data.email)
-      sessionStorage.setItem('role', response.data.data.role)
-      setRole(response.data.data.role)
+      if (response.data.code != 0) {
+        navigate("/login")
+      } else {
+        localStorage.setItem('email', response.data.data.email)
+        localStorage.setItem('role', response.data.data.role)
+        setRole(response.data.data.role)
+      }
     })
   })
 
