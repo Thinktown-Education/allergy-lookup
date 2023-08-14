@@ -9,7 +9,7 @@ cors = CORS(auth, supports_credentials=True)
 
 def getConnector():
     db = mysql.connector.connect(
-        host="localhost",
+        host="db",
         user="root",
         password="admin",
         database="allergy"

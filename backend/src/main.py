@@ -10,7 +10,7 @@ user = None
 
 def getConnector():
     db = mysql.connector.connect(
-        host="localhost",
+        host="db",
         user="root",
         password="admin",
         database="allergy"
@@ -68,7 +68,7 @@ def findFood():
 @main.route('/findIngredients')
 def findIngredients():
     name = request.args.get('name')
-    if not name:
+    if name == None:
         return {
             "code": 1,
             "error": "Invalid request"
@@ -80,6 +80,7 @@ def findIngredients():
     cursor.execute("""
                    SELECT * FROM ingredient
                    WHERE ing_name_lower LIKE LOWER(%s)""", [blurName])
+    print(blurName)
     result = cursor.fetchall()
     cursor.close()
     db.close()
@@ -248,7 +249,7 @@ def editFood():
     cursor = db.cursor(dictionary=True)
     cursor.execute("""
     UPDATE food
-    SET food_name = %s, food_name_lower = LOWER(%s), brand = %s, brand_lower = LOWER(%s), image_url = %s
+    SET food_name = %s, food_name_lower = LOWER(%s), brand = %s, brand_lower = LOWER(%s), image_url = %s, modified = CURRENT_TIMESTAMP
     WHERE id = %s
     """, inputList)
 
@@ -286,6 +287,170 @@ def deleteFood(id_food):
         "error": "success"
     }
 
+@cross_origin()
+@main.route('/addIngredient', methods = ['POST'])
+def addIngredient():
+    if user['role'] < int(Role.EDITOR):
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+    
+    data = request.get_json(silent=True)
+    if data == None:
+        data = request.form
+
+    if "ing_name" not in data:
+        return {
+            "code": 1,
+            "error": "Incorrect format"
+        }
+    
+    ing_name = data["ing_name"]
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("INSERT INTO ingredient (ing_name, ing_name_lower) values (%s, LOWER(%s))", [ing_name, ing_name])
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
+    }
+
+@cross_origin()
+@main.route('/editIngredient', methods = ['POST'])
+def editIngredient():
+    if user['role'] < int(Role.EDITOR):
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+    
+    data = request.get_json(silent=True)
+    if data == None:
+        data = request.form
+
+    if "id" not in data \
+        or "ing_name" not in data:
+        return {
+            "code": 1,
+            "error": "Incorrect format"
+        }
+    
+    id_ing = data["id"]
+    ing_name = data["ing_name"]
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("UPDATE ingredient SET ing_name = %s, modified = CURRENT_TIMESTAMP WHERE id = %s", [ing_name, id_ing])
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
+    }
+    
+@cross_origin()
+@main.route('/deleteIngredient/<id_ing>', methods = ['GET'])
+def deleteIngredient(id_ing):
+    if user['role'] < int(Role.EDITOR):
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+
+    id_ing = int(id_ing)
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("DELETE FROM ingredient WHERE id = %s", [id_ing])
+    cursor.execute("DELETE FROM food_ingredient WHERE id_ing = %s", [id_ing])
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
+    }
+
+@cross_origin()
+@main.route('/findUser')
+def findUser():
+    if user['role'] < Role.ADMIN:
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+    
+    email = request.args.get('email')
+    if email == None:
+        return {
+            "code": 1,
+            "error": "Invalid request"
+        }
+    
+    emailSubstring = '%' + email + '%'
+
+    db = getConnector()
+    cursor = db.cursor(dictionary = True)
+    cursor.execute("""
+        SELECT * FROM user
+        WHERE email LIKE %s""", [emailSubstring])
+    result = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return {
+        "code": 0,
+        "error": "success",
+        "data": result
+    }
+
+@cross_origin()
+@main.route('/updateUser', methods = ['POST'])
+def updateUser():
+    if user['role'] < Role.ADMIN:
+        return {
+            "code": 1,
+            "error": "Permission not allowed"
+        }
+    
+    data = request.get_json(silent=True)
+    if "id" not in data \
+        or "role" not in data \
+        or "email" not in data:
+            return {
+                "code": 1,
+                "error": "Incorrect data format"
+            }
+
+    db = getConnector()
+    cursor = db.cursor(dictionary=True)
+
+    # 检查被改动用户是否是admin
+    cursor.execute("""
+        SELECT * FROM user
+        WHERE id = %s""", [data['id']])
+    result = cursor.fetchall()
+    if len(result) > 0:
+        current = result[0]
+        if current['role'] == Role.ADMIN:
+            return {
+                "code": 1,
+                "error": "Admin's cannot be altered through webpage"
+            }
+
+    statement = """UPDATE user SET role = %s WHERE id = %s"""
+    cursor.execute(statement, [data['role'], data['id']])
+
+    db.commit()
+    cursor.close()
+    db.close()
+    return {
+        "code": 0,
+        "error": "success"
+    }
+    
 """
 所有需要登陆状态的请求都必须经过session检查
 """

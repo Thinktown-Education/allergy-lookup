@@ -23,7 +23,19 @@ const food = {
 
   deleteFood(id) {
     return http.get(`/deleteFood/${id}`)
-  }
+  },
+
+  addIngredient(requestBody) {
+    return http.post(`/addIngredient`, requestBody)
+  },
+
+  editIngredient(requestBody) {
+    return http.post(`/editIngredient`, requestBody)
+  },
+
+  deleteIngredient(id) {
+    return http.get(`/deleteIngredient/${id}`)
+  },
 }
 
 export default food

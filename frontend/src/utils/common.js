@@ -18,8 +18,7 @@ var common = {
     return sessionStorage.getItem('role')
   },
 
-  getRoleName: function () {
-    var value = sessionStorage.getItem('role')
+  getRoleName: function (value) {
     var roles = {
       0: 'User',
       1: 'Editor',

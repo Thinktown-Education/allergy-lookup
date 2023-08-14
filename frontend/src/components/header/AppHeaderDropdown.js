@@ -16,7 +16,7 @@ import common from 'src/utils/common'
 
 const AppHeaderDropdown = () => {
   const displayEmail = sessionStorage.getItem('email')
-  const roleName = common.getRoleName()
+  const roleName = common.getRoleName(sessionStorage.getItem('role'))
 
   const logout = async (e) => {
     e.preventDefault()
