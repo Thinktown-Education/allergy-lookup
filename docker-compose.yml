@@ -9,8 +9,8 @@ services:
     ports:
       - '3306:3306'
     volumes:
+      - ./mysql/allergy.sql:/vol/allergy.sql
       - ./mysql/data:/var/lib/mysql
-      - ./mysql/conf.d:/etc/mysql/conf.d
   backend:
     container_name: backend
     build: 
