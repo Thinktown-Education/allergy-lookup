@@ -38,3 +38,4 @@ flask run
 ```
 
 # Prod Environment 生产环境
+[看这里](./notes/deployment.md)
