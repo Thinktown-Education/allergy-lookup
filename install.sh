@@ -1,10 +1,10 @@
  #!/bin/bash
+sudo apt-get update
 
 echo ""
 echo "===== Installing Docker ====="
 echo ""
 
-sudo apt-get update
 sudo apt-get install ca-certificates curl gnupg
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -18,10 +18,6 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo groupadd docker
-
-echo ""
-echo "===== Docker installed ====="
-echo ""
 
 echo ""
 echo "===== Installing Nodejs + npm ====="

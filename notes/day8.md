@@ -4,7 +4,7 @@ Allergy项目第八节课\
 用时：1小时
 
 # Menu routing
-![Alt text](image.png)
+![Alt text](./image.png)
 左侧可以看到我们现在已经有Menu了。之后对menu的改动可以在`menu.js`和`routes.js`中进行编辑。代码不难，只需要依样画葫芦就行
 
 # Content 页面
