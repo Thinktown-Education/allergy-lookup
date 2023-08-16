@@ -130,7 +130,7 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (14, 2, 'kolxy@qq.com', '21232f297a57a5a743894a0e4a801fc3', '2023-05-27 08:27:49', '2023-08-12 09:21:58');
+INSERT INTO `user` VALUES (14, 2, 'lninjia.ganve@gmail.com', '21232f297a57a5a743894a0e4a801fc3', '2023-05-27 08:27:49', '2023-08-12 09:21:58');
 INSERT INTO `user` VALUES (15, 1, 'aaa@qq.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2023-08-07 04:08:33', '2023-08-13 05:49:40');
 INSERT INTO `user` VALUES (16, 1, 'bbb@qq.com', 'ee11cbb19052e40b07aac0ca060c23ee', '2023-08-12 07:46:22', '2023-08-14 05:19:07');
 INSERT INTO `user` VALUES (17, 0, 'bccb@qq.com', '74b87337454200d4d33f80c4663dc5e5', '2023-08-14 06:58:06', '2023-08-14 06:58:06');
