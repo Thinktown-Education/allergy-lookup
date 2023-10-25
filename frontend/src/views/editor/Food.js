@@ -131,7 +131,7 @@ export default function Food() {
     setId(item.id)
     setBrand(item.brand)
     setFoodName(item.food_name)
-    setImageUrl("")
+    setImageUrl(item.image_url)
     setList(item.ingredients.map(x => ({value: x.id, label: x.ing_name})))
     setVisible(true)
   }
