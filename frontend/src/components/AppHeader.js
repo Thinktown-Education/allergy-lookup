@@ -17,7 +17,7 @@ import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 
-import thinktown from 'src/assets/images/thinktown.png'
+import logo from 'src/assets/images/logo.png'
 
 const AppHeader = () => {
   const dispatch = useDispatch()

@@ -9,7 +9,7 @@ import { AppSidebarNav } from './AppSidebarNav'
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 
-import thinktown from 'src/assets/images/thinktown.png'
+import logo from 'src/assets/images/logo.png'
 import menu from 'src/menu'
 
 const AppSidebar = ({ role }) => {
@@ -28,7 +28,7 @@ const AppSidebar = ({ role }) => {
       }}
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
-        <img src={thinktown} style={{ width: '75%' }}/>
+        <img src={logo} style={{ width: '75%' }}/>
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

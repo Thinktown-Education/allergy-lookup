@@ -47,7 +47,7 @@ def findFood():
     
     db = getConnector()
     cursor = db.cursor(dictionary = True)
-    blurName = '%' + name + '%' # SQL中使用%符号进行模糊查询
+    blurName = '%' + name + '%' # % for pattern search
     cursor.execute("""
                    SELECT * FROM food 
                    WHERE food_name_lower LIKE LOWER(%s) or brand_lower LIKE LOWER(%s)""", [blurName, blurName])
@@ -123,13 +123,13 @@ def findFoodByIngredients():
             "data": []
         }
     
-    # 使用set类型对id进行去重
+    # Remove duplicates using set
     idSet = set() 
     for iId in ingredientsId:
         idSet.add(iId)
     
     idCount = len(idSet)
-    idFormat = str(idSet)[1:-1] # 去除首尾花括号
+    idFormat = str(idSet)[1:-1] # Remove {}
 
     queryTemplate = f"""
     SELECT
@@ -348,7 +348,7 @@ def editIngredient():
     ing_name = data["ing_name"]
     db = getConnector()
     cursor = db.cursor(dictionary = True)
-    cursor.execute("UPDATE ingredient SET ing_name = %s, modified = CURRENT_TIMESTAMP WHERE id = %s", [ing_name, id_ing])
+    cursor.execute("UPDATE ingredient SET ing_name = %s, ing_name_lower = LOWER(%s), modified = CURRENT_TIMESTAMP WHERE id = %s", [ing_name, ing_name, id_ing])
     db.commit()
     cursor.close()
     db.close()
@@ -433,7 +433,7 @@ def updateUser():
     db = getConnector()
     cursor = db.cursor(dictionary=True)
 
-    # 检查被改动用户是否是admin
+    # check if the target user is admin
     cursor.execute("""
         SELECT * FROM user
         WHERE id = %s""", [data['id']])
@@ -458,7 +458,7 @@ def updateUser():
     }
     
 """
-所有需要登陆状态的请求都必须经过session检查
+Always run this before any request to main api
 """
 @cross_origin()
 @main.before_request

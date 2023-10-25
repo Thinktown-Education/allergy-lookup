@@ -33,7 +33,7 @@ def login():
             "code": 1,
             "error": "Missing information"
         }
-    # MD5加密
+    # MD5 Encryption
     encodedPassword = hashlib.md5(data["password"].encode()).hexdigest()
     db = getConnector()
     cursor = db.cursor()
@@ -81,7 +81,7 @@ def register():
             "error": "Email is already registered"
         }
     
-    # MD5加密
+    # MD5 Encryption
     encodedPassword = hashlib.md5(data["password"].encode()).hexdigest()
     sql = "INSERT INTO user(email, password, role) values (%s, %s, 0)"
     val = (data["email"], encodedPassword)
