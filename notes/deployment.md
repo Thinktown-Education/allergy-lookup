@@ -64,26 +64,13 @@ sudo ./install.sh
 
 运行脚本的时候中间会不间断的问一些 y/n 的问题，手动输入`y`并回车即可
 
-## 前端代码处理
-和咱们平时操作一样，cd进入前端目录并安装js依赖。这里我们多一个build的动作，把代码编译成html和js，而不是我们之前的react
-```bash
-cd frontend
-npm install
+## 更改配置
+我们要把ip地址和数据库密码等各种信息存在根目录的.env文件内，然后但程序启动时会把.env里的参数传给每个容器
+```sh
+cp .env.example .env
+ls -la
 ```
-
-### 前端base url配置
-我们要记得把 `frontend/src/utils/common.js` 中的base_url值从原本的`localhost`改成服务器的ip。上课会讲如何使用vi更改文件
-```js
--  base_url: process.env.NODE_ENV == "production" ? "http://localhost:5000/api" : "http://localhost:5000/api",
-+  base_url: "http://<your ip address>/api",
-```
-这个做法不是很优美，工业化的流程是不需要这么做的
-
-### 编译前端代码
-运行下面的命令对代码进行编译，可能会需要几分钟的时间
-```bash
-npm run build
-```
+接下来你就能看到咱们项目根目录内多了一个.env的文件，把.env内的文件根据自己的需求进行更改
 
 ## 启动Docker环境
 Docker是一个容器化工具。每一个容器相当于一个自己的隔离环境，可以不让程序之间的依赖产生冲突。老师已经提前把每个容器都配置好了，这里你只需要会运行即可。首先返回源目录，然后启动docker容器。
@@ -98,17 +85,14 @@ sudo docker ps -a
 如果不出意外我们可以看到三个容器，分别是frontend backend mysql。
 
 ## 数据库导入格式
-数据库的默认登录用户名和密码是root和admin，这些在`docker-compose.yml`中定义好了。而我们下一步要做的就是把allergy数据库导入。首先登入容器内的数据库
+数据库的默认登录用户名和密码是root和.env中你自己更改的`MYSQL_ROOT_PASSWORD`，这些在`docker-compose.yml`中定义好了。而我们下一步要做的就是把allergy数据库导入。在allergy-lookup根目录中运行以下两行命令
 ```bash
-sudo docker exec -it mysql mysql -uroot -padmin
+sudo docker exec -i mysql mysql -uroot -p<MYSQL_ROOT_PASSWORD> -e "CREATE DATABASE allergy"
+sudo docker exec -i mysql mysql -uroot -p<MYSQL_ROOT_PASSWORD> allergy < mysql/allergy.sql
 ```
 
-注意这里-uroot和-padmin，其实这就是用户名和密码。格式必须按照上面的命令来没有空格。
-
-当你的terminal prompt改成mysql的时候说明你进入了数据库。接下来我们创建数据库allergy，进入刚创建的数据库，并且导入我们提前定义好的sql文件。注意mysql中的命令其实就是代码，每一条命令的末尾要加`;`
-```sql
-CREATE DATABASE IF NOT EXISTS allergy;   -- 创建数据库
-use allergy;                             -- 进入数据库
-source /vol/allergy.sql;                 -- 导入sql文件作为表结构和数据
-exit;                                    -- 退出数据库，返回服务器terminal
+假如你的数据库密码是`123123`, 那么你就应该运行
+```bash
+sudo docker exec -i mysql mysql -uroot -p123123 -e "CREATE DATABASE allergy"
+sudo docker exec -i mysql mysql -uroot -p123123 allergy < mysql/allergy.sql
 ```
