@@ -1,8 +1,6 @@
 var common = {
-  // env
-  env: process.env.NODE_ENV,
   // base url
-  base_url: process.env.NODE_ENV == "production" ? "http://localhost:5000/api" : "http://localhost:5000/api",
+  base_url: process.env.NODE_ENV == "production" ? process.env.REACT_APP_BASE_URL + "/api" : "http://localhost:5000/api",
   /**
    * Common method for checking empty objeect
    * @param {*} value
@@ -10,7 +8,7 @@ var common = {
    */
   isEmpty: function (value) {
     return (
-      value === '' || value == null || value === undefined || value === [] || value.length === 0
+      value === '' || value == null || value === undefined || value == [] || value.length === 0
     )
   },
 
