@@ -4,20 +4,25 @@ from flask_cors import CORS, cross_origin
 import mysql.connector
 from enum import IntEnum
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+password = os.getenv("MYSQL_ROOT_PASSWORD")
+hostname = "db"
+if os.getenv("FLASK_DEBUG"):
+    hostname = "localhost"
+    password = "admin"
+
+print(password)
 main = Blueprint('main', __name__)
 cors = CORS(main, supports_credentials=True)
 user = None
 
 def getConnector():
-    hostname = "db"
-    if os.getenv("FLASK_DEBUG"):
-        hostname = "localhost"
-
     db = mysql.connector.connect(
         host=hostname,
         user="root",
-        password="admin",
+        password=password,
         database="allergy"
     )
     return db
